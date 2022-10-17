@@ -1,4 +1,4 @@
-use crate::tts::tts::PlayEngine;
+use crate::player::PlayEngine;
 use std::process::{Command, Stdio};
 
 pub struct Sox {}

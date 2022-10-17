@@ -1,22 +1,24 @@
-pub trait TtsEgine {
-    fn speak(&self, text: &str);
-}
+use crate::player::PlayEngine;
 
-pub trait PlayEngine {
-    fn play(&self, file: &str);
-    fn stop(&self);
+pub trait TtsEgine {
+    fn new() -> Self;
+    fn speak(&self, text: &str);
+    fn set_lang(&mut self, lang: String) -> &mut Self;
+    fn set_speed(&mut self, speed: i32) -> &mut Self;
 }
 
 pub struct Tts {
-    lang: String,
-    speed: String,
+    pub lang: String,
+    pub speed: i32,
+    pub path: String,
 }
 
 impl Tts {
     pub fn new() -> Tts {
         Tts {
             lang: String::from("fr-FR"),
-            speed: String::from("1"),
+            speed: 1,
+            path: String::from("/dev/shm/out.wav"),
         }
     }
 
@@ -25,17 +27,20 @@ impl Tts {
         self
     }
 
-    pub fn set_speed(&mut self, speed: String) -> &mut Tts {
+    pub fn set_speed(&mut self, speed: i32) -> &mut Tts {
         self.speed = speed;
         self
     }
 
-    pub fn speak(&self, engine: impl TtsEgine, text: &str) {
-        engine.speak(text);
+    pub fn speak(&self, text: &str, engine: &mut impl TtsEgine) {
+        engine
+            .set_lang(self.lang.clone())
+            .set_speed(self.speed.clone())
+            .speak(text);
     }
 
     pub fn play(&self, engine: impl PlayEngine) {
-        engine.play("/dev/shm/out.wav");
+        engine.play(self.path.as_str());
     }
 
     pub fn stop(&self, engine: impl PlayEngine) {

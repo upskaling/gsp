@@ -1,22 +1,53 @@
-use crate::tts::tts::TtsEgine;
 use std::process::{Command, Stdio};
 
-pub struct Espeak {}
+use crate::tts::tts::TtsEgine;
+
+pub struct Espeak {
+    pub lang: String,
+    pub speed: i32,
+    pub pitch: i32,
+    pub volume: i32,
+    pub path: String,
+}
 
 impl TtsEgine for Espeak {
     fn speak(&self, text: &str) {
         Command::new("espeak")
-            .arg("-vmb-fr4")
-            .arg("-s 320")
-            .arg("-p 45")
-            .arg("-a 100")
-            .arg("-w /dev/shm/out.wav")
+            .arg("-v")
+            .arg(format!("mb-{}{}", self.lang[..2].to_uppercase(), "4"))
+            .arg("-s")
+            .arg("300")
+            .arg("-s")
+            .arg("320")
+            .arg("-p")
+            .arg("45")
+            .arg("-a")
+            .arg("100")
+            .arg("-w")
+            .arg(self.path.as_str())
             .arg(text)
             .stdout(Stdio::piped())
             .output()
             .expect("failed to execute process");
-    
-        // io::stdout().write_all(&output.stdout).unwrap();
-        // io::stderr().write_all(&output.stderr).unwrap();
+    }
+
+    fn new() -> Self {
+        Espeak {
+            lang: String::from("fr-FR"),
+            speed: 1,
+            pitch: 1,
+            volume: 1,
+            path: String::from("/dev/shm/out.wav"),
+        }
+    }
+
+    fn set_lang(&mut self, lang: String) -> &mut Self {
+        self.lang = lang;
+        self
+    }
+
+    fn set_speed(&mut self, speed: i32) -> &mut Self {
+        self.speed = speed;
+        self
     }
 }

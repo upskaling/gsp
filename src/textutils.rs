@@ -27,7 +27,7 @@ pub fn remove_special_characters(text: &str) -> String {
     let mut result = String::new();
     let mut list_of_special_characters = Vec::new();
 
-    let l = ['𝐀', '𝐚', '𝐴', '𝑎', '𝑨', '𝒂', '𝒜', '𝒶', '𝘢'];
+    let l = ['A', '𝐀', '𝐚', '𝐴', '𝑎', '𝑨', '𝒂', '𝒜', '𝒶', '𝘢'];
 
     for j in 0..l.len() {
         for i in 0..26 {

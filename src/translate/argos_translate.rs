@@ -8,8 +8,6 @@ impl TranslateEngine for ArgosTranslate {
         let lang_from = lang_from[..2].to_string();
         let lang_to = lang_to[..2].to_string();
 
-        println!("{} -> {}", lang_from, lang_to);
-
         let output = Command::new("argos-translate-cli")
             .arg("--from-lang")
             .arg(lang_from)
@@ -23,13 +21,12 @@ impl TranslateEngine for ArgosTranslate {
 
         let stderr = String::from_utf8_lossy(&output.stderr);
         if stderr != "" {
-            println!("stderr: {}", stderr);
+            println!("stderr :: argos-translate ::  {}", stderr);
         }
 
         let output = String::from_utf8(output.stdout).unwrap();
         let output = output.trim();
 
-        println!("{} -> {}", text, output);
         output.to_string()
     }
 }
