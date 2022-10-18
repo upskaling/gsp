@@ -18,7 +18,7 @@ pub struct Pico {
 
 impl TtsEgine for Pico {
     fn speak(&self, text: &str) {
-        let effect = pico_effect(text, self.speed * 100, 100, 120);
+        let effect = pico_effect(text, self.speed, 100, 120);
 
         Command::new("pico2wave")
             .arg(format!("--lang={}", self.lang))

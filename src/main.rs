@@ -4,6 +4,10 @@ mod player;
 mod textutils;
 mod translate;
 mod tts;
+mod utils;
+
+use tts::tts::TtsEgine;
+use utils::get_pid;
 
 use crate::input::clipboard::Clipboard;
 use crate::input::selection::Selection;
@@ -16,26 +20,29 @@ use crate::translate::translate_engine::TranslateEngine;
 use crate::tts::espeak::Espeak;
 use crate::tts::pico::Pico;
 use crate::tts::tts::Tts;
-use clap::Parser;
-use tts::tts::TtsEgine;
 
 fn main() {
-    let args = cli::Args::parse();
+    let args = cli::build_app();
 
     let mut tts = Tts::new();
-    if args.stop {
+
+    if *args.get_one::<bool>("stop").unwrap() {
         tts.stop(Paplay {});
         return;
     }
 
-    // Vérifier que le programme a été lancé une seule fois lock
+    if get_pid("gsp") {
+        println!("Une autre instance du programme est en cours");
+        tts.stop(Paplay {});
+        return;
+    }
 
     let mut text = String::new();
     // Récupérer la sélection
-    if args.selection {
+    if *args.get_one::<bool>("selection").unwrap() {
         let selection = Selection {};
         text = selection.input();
-    } else if args.clipboard {
+    } else if *args.get_one::<bool>("clipboard").unwrap() {
         let clipboard = Clipboard {};
         text = clipboard.input();
     }
@@ -47,28 +54,26 @@ fn main() {
 
     text = text_to_dict(&text);
 
-    if args.translation.is_some() {
-        let engine = args.engine_trans.unwrap();
+    let lang = args.get_one::<String>("lang").unwrap();
+
+    if args.contains_id("translation") {
+        let translation = args.get_one::<String>("translation").unwrap();
+        let engine = args.get_one::<String>("engine-translation").unwrap();
 
         if engine == "libretranslate" {
-            text = Libretranslate {}.translate(
-                &text,
-                &args.translation.unwrap(),
-                &args.lang.as_ref().unwrap(),
-            );
+            text = Libretranslate {}.translate(&text, translation.as_str(), lang);
         } else if engine == "argos_translate" {
-            text = ArgosTranslate {}.translate(
-                &text,
-                &args.translation.unwrap(),
-                &args.lang.as_ref().unwrap(),
-            );
+            text = ArgosTranslate {}.translate(&text, translation.as_str(), lang);
         }
     }
 
-    tts.set_lang(args.lang.unwrap())
-        .set_speed(args.speed.unwrap().parse::<i32>().unwrap());
+    let speed = args.get_one::<String>("speed").unwrap();
+    let speed = speed.parse::<f32>().unwrap() * 100.0;
+    let speed = speed as i32;
 
-    let engine = args.tts.unwrap();
+    tts.set_lang(lang.clone()).set_speed(speed);
+
+    let engine = args.get_one::<String>("engine-tts").unwrap();
 
     if engine == "pico" {
         tts.speak(&text, &mut Pico::new());

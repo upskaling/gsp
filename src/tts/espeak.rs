@@ -12,13 +12,13 @@ pub struct Espeak {
 
 impl TtsEgine for Espeak {
     fn speak(&self, text: &str) {
+        let speed = (self.speed / 100 * 320) / 2;
+
         Command::new("espeak")
             .arg("-v")
             .arg(format!("mb-{}{}", self.lang[..2].to_uppercase(), "4"))
             .arg("-s")
-            .arg("300")
-            .arg("-s")
-            .arg("320")
+            .arg(speed.to_string())
             .arg("-p")
             .arg("45")
             .arg("-a")
