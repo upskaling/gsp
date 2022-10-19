@@ -1,15 +1,14 @@
-// Vérifier si une autre instance du programme est en cours
+use psutil::process::processes;
 
-pub fn get_pid(process_name: &str) -> bool {
-    let cmd = std::process::Command::new("pidof")
-        .arg(process_name)
-        .output()
-        .expect("failed to execute process");
+pub fn get_pidof(process_name: &str) -> Vec<u32> {
+    let mut processes_list = Vec::new();
+    for process in processes().unwrap() {
+        let process = process.unwrap();
 
-    let output = String::from_utf8_lossy(&cmd.stdout);
-    let output = output.trim();
+        if process.name().unwrap() == process_name {
+            processes_list.push(process.pid());
+        }
+    }
 
-    let pid = std::process::id().to_string();
-
-    return output != pid;
+    processes_list
 }

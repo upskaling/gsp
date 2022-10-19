@@ -11,6 +11,7 @@ pub struct Tts {
     pub lang: String,
     pub speed: i32,
     pub path: String,
+    pub text: String,
 }
 
 impl Tts {
@@ -19,6 +20,7 @@ impl Tts {
             lang: String::from("fr-FR"),
             speed: 1,
             path: String::from("/dev/shm/out.wav"),
+            text: String::new(),
         }
     }
 
@@ -32,11 +34,16 @@ impl Tts {
         self
     }
 
-    pub fn speak(&self, text: &str, engine: &mut impl TtsEgine) {
+    pub fn set_text(&mut self, text: String) -> &mut Tts {
+        self.text = text;
+        self
+    }
+
+    pub fn speak(&self, engine: &mut impl TtsEgine) {
         engine
             .set_lang(self.lang.clone())
             .set_speed(self.speed.clone())
-            .speak(text);
+            .speak(&self.text);
     }
 
     pub fn play(&self, engine: impl PlayEngine) {

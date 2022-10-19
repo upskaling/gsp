@@ -7,10 +7,8 @@ mod tts;
 mod utils;
 
 use tts::tts::TtsEgine;
-use utils::get_pid;
+use utils::get_pidof;
 
-use crate::input::clipboard::Clipboard;
-use crate::input::selection::Selection;
 use crate::input::InputEngine;
 use crate::player::paplay::Paplay;
 use crate::textutils::text_to_dict;
@@ -31,24 +29,28 @@ fn main() {
         return;
     }
 
-    if get_pid("gsp") {
+    if get_pidof("gsp").len() > 1 {
         println!("Une autre instance du programme est en cours");
         tts.stop(Paplay {});
         return;
     }
 
-    let mut text = String::new();
-    // Récupérer la sélection
-    if *args.get_one::<bool>("selection").unwrap() {
-        let selection = Selection {};
-        text = selection.input();
-    } else if *args.get_one::<bool>("clipboard").unwrap() {
-        let clipboard = Clipboard {};
-        text = clipboard.input();
+    if !args.contains_id("source") {
+        println!("Aucune source n'a été spécifiée");
+        return;
     }
 
-    if text == "" {
-        println!("No text to read");
+    let source = args.get_one::<String>("source").unwrap();
+
+    let mut text = match source.as_str() {
+        "selection" => input::selection::Selection {}.input(),
+        "clipboard" => input::clipboard::Clipboard {}.input(),
+        "stdin" => input::stdin::Stdin {}.input(),
+        _ => String::new(),
+    };
+
+    if text.is_empty() {
+        println!("Aucun texte à lire");
         return;
     }
 
@@ -60,26 +62,25 @@ fn main() {
         let translation = args.get_one::<String>("translation").unwrap();
         let engine = args.get_one::<String>("engine-translation").unwrap();
 
-        if engine == "libretranslate" {
-            text = Libretranslate {}.translate(&text, translation.as_str(), lang);
-        } else if engine == "argos_translate" {
-            text = ArgosTranslate {}.translate(&text, translation.as_str(), lang);
-        }
+        text = match engine.as_str() {
+            "libretranslate" => Libretranslate {}.translate(&text, translation.as_str(), lang),
+            "argos_translate" => ArgosTranslate {}.translate(&text, translation.as_str(), lang),
+            _ => String::new(),
+        };
     }
 
     let speed = args.get_one::<String>("speed").unwrap();
     let speed = speed.parse::<f32>().unwrap() * 100.0;
     let speed = speed as i32;
 
-    tts.set_lang(lang.clone()).set_speed(speed);
+    tts.set_lang(lang.clone()).set_speed(speed).set_text(text);
 
     let engine = args.get_one::<String>("engine-tts").unwrap();
 
-    if engine == "pico" {
-        tts.speak(&text, &mut Pico::new());
-    } else if engine == "espeak" {
-        tts.speak(&text, &mut Espeak::new());
+    match engine.as_str() {
+        "pico" => tts.speak(&mut Pico::new()),
+        "espeak" => tts.speak(&mut Espeak::new()),
+        _ => tts.speak(&mut Pico::new()),
     }
-
     tts.play(Paplay {});
 }
