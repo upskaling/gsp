@@ -54,7 +54,55 @@ pub fn remove_special_characters(text: &str) -> String {
     result
 }
 
-//
+// Lister tous les fichiers d'un répertoire
+pub fn list_files(path: &str) -> Vec<String> {
+    let mut result = Vec::new();
+
+    let paths = std::fs::read_dir(path).unwrap();
+
+    for path in paths {
+        let path = path.unwrap().path();
+        let path = path.to_str().unwrap();
+        result.push(path.to_string());
+    }
+
+    result
+}
+
+fn get_list_replace() -> Vec<(String, String)> {
+    let mut result = Vec::new();
+
+    let path = list_files("dict/fr_FR");
+
+    for file in path {
+        if std::fs::metadata(&file).unwrap().is_file() {
+            let file = std::fs::read_to_string(file).unwrap();
+            let file = file.split("\n").collect::<Vec<&str>>();
+            for line in file {
+                let line = line.split("=").collect::<Vec<&str>>();
+
+                if line.len() != 2 {
+                    continue;
+                }
+                result.push((line[0].to_string(), line[1].to_string()));
+            }
+        }
+    }
+
+    result
+}
+
+pub fn replace(text: &str) -> String {
+    // list les fichiers dans le dossier dict
+    let mut text = text.to_string();
+
+    let list_replace = get_list_replace();
+    for i in 0..list_replace.len() {
+        text = text.replace(&list_replace[i].0, &list_replace[i].1);
+    }
+
+    return text.to_string();
+}
 
 pub fn text_to_dict(text: &str) -> String {
     let mut result = remove_quotes(text);
