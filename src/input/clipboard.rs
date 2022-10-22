@@ -1,5 +1,5 @@
+use super::InputEngine;
 use cli_clipboard::{ClipboardContext, ClipboardProvider};
-use crate::input::InputEngine;
 
 pub struct Clipboard {}
 
@@ -10,4 +10,3 @@ impl InputEngine for Clipboard {
         contents
     }
 }
-

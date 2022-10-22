@@ -1,33 +1,32 @@
 // remove multiple spaces in a string
-pub fn remove_multiple_spaces(text: &str) -> String {
-    let mut result = String::new();
-    let mut last_char = ' ';
-    for c in text.chars() {
-        if c != ' ' || last_char != ' ' {
-            result.push(c);
+// https://stackoverflow.com/a/71864249
+pub fn trim_whitespace(s: &str) -> String {
+    // second attempt: only allocate a string
+    let mut result = String::with_capacity(s.len());
+    s.split_whitespace().for_each(|w| {
+        if !result.is_empty() {
+            result.push(' ');
         }
-        last_char = c;
-    }
+        result.push_str(w);
+    });
     result
 }
 
 // remove quotes ", ' and ` from a string
 pub fn remove_quotes(text: &str) -> String {
-    let mut result = String::new();
+    let mut text = text.to_string();
     let list_of_quotes = ['"', '\'', '`'];
-    for c in text.chars() {
-        if !list_of_quotes.contains(&c) {
-            result.push(c);
-        }
+    for quote in list_of_quotes.iter() {
+        text = text.replace(*quote, "");
     }
-    result
+    text
 }
 
 pub fn remove_special_characters(text: &str) -> String {
     let mut result = String::new();
     let mut list_of_special_characters = Vec::new();
 
-    let l = ['A', '𝐀', '𝐚', '𝐴', '𝑎', '𝑨', '𝒂', '𝒜', '𝒶', '𝘢'];
+    let l = ['𝐀', '𝐚', '𝐴', '𝑎', '𝑨', '𝒂', '𝒜', '𝒶', '𝘢'];
 
     for j in 0..l.len() {
         for i in 0..26 {
@@ -93,21 +92,26 @@ fn get_list_replace() -> Vec<(String, String)> {
 }
 
 pub fn replace(text: &str) -> String {
-    // list les fichiers dans le dossier dict
-    let mut text = text.to_string();
+    // Si le répertoire existe
+    if std::path::Path::new("dict/fr_FR").exists() {
+        let mut text = text.to_string();
+        // list les fichiers dans le dossier dict
+        let list_replace = get_list_replace();
 
-    let list_replace = get_list_replace();
-    for i in 0..list_replace.len() {
-        text = text.replace(&list_replace[i].0, &list_replace[i].1);
+        for i in 0..list_replace.len() {
+            text = text.replace(&list_replace[i].0, &list_replace[i].1);
+        }
     }
 
     return text.to_string();
 }
 
 pub fn text_to_dict(text: &str) -> String {
-    let mut result = remove_quotes(text);
-    result = remove_multiple_spaces(&result);
-    result = remove_special_characters(&result);
+    let mut text = text.to_string().to_lowercase();
+    text = text.trim().to_string();
+    text = trim_whitespace(&text);
+    text = remove_quotes(&text);
+    text = remove_special_characters(&text);
 
-    result
+    text
 }

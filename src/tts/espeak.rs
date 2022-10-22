@@ -1,4 +1,4 @@
-use std::process::{Command, Stdio};
+use std::process::Command;
 
 use super::tts::TtsEgine;
 
@@ -30,9 +30,9 @@ impl TtsEgine for Espeak {
             // path
             .arg("-w")
             .arg(self.path.as_str())
+            .arg("--")
             // text
             .arg(text)
-            .stdout(Stdio::piped())
             .output()
             .expect("failed to execute process");
     }

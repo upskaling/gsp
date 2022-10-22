@@ -25,6 +25,7 @@ impl TtsEgine for Pico {
         Command::new("pico2wave")
             .arg(format!("--lang={}", self.lang))
             .arg(format!("-w={}", self.path))
+            .arg("--")
             .arg(effect)
             .stdout(Stdio::piped())
             .output()

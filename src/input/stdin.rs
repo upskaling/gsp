@@ -1,4 +1,4 @@
-use crate::input::InputEngine;
+use super::InputEngine;
 
 pub struct Stdin {}
 
