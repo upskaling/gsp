@@ -1,4 +1,5 @@
-use crate::{textutils::replace, tts::tts::TtsEgine};
+use super::tts::TtsEgine;
+use crate::utils::textutils::replace;
 use std::process::{Command, Stdio};
 
 fn pico_effect(text: &str, speed: i32, pitch: i32, volume: i32) -> String {

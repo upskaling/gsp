@@ -1,7 +1,6 @@
 mod cli;
 mod input;
 mod player;
-mod textutils;
 mod translate;
 mod tts;
 mod utils;
@@ -11,7 +10,7 @@ use utils::get_pidof;
 
 use crate::input::InputEngine;
 use crate::player::paplay::Paplay;
-use crate::textutils::text_to_dict;
+use crate::utils::textutils::text_to_dict;
 use crate::translate::argos_translate::ArgosTranslate;
 use crate::translate::libretranslate::Libretranslate;
 use crate::translate::translate_engine::TranslateEngine;

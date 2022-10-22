@@ -1,6 +1,6 @@
 use std::process::{Command, Stdio};
 
-use crate::tts::tts::TtsEgine;
+use super::tts::TtsEgine;
 
 pub struct Espeak {
     pub lang: String,
@@ -15,16 +15,22 @@ impl TtsEgine for Espeak {
         let speed = (self.speed / 100 * 320) / 2;
 
         Command::new("espeak")
+            // voice name
             .arg("-v")
             .arg(format!("mb-{}{}", self.lang[..2].to_uppercase(), "4"))
+            // speed
             .arg("-s")
             .arg(speed.to_string())
+            // pitch
             .arg("-p")
             .arg("45")
+            // volume
             .arg("-a")
             .arg("100")
+            // path
             .arg("-w")
             .arg(self.path.as_str())
+            // text
             .arg(text)
             .stdout(Stdio::piped())
             .output()
