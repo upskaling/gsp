@@ -45,6 +45,7 @@ fn main() {
         "selection" => input::selection::Selection {}.input(),
         "clipboard" => input::clipboard::Clipboard {}.input(),
         "stdin" => input::stdin::Stdin {}.input(),
+        "ocr" => input::ocr::Ocr {}.input(),
         _ => String::new(),
     };
 
