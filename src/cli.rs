@@ -24,7 +24,7 @@ pub fn build_app() -> ArgMatches {
         )
         // lang [de-DE,en-GB,en-US,es-ES,fr-FR,it-IT]
         .arg(
-            clap::Arg::new("lang")
+            clap::Arg::new("lang_targets")
                 .short('l')
                 .long("lang")
                 .help("Set language for TTS engine")
@@ -33,7 +33,7 @@ pub fn build_app() -> ArgMatches {
         )
         // translation [de-DE,en-GB,en-US,es-ES,fr-FR,it-IT]
         .arg(
-            clap::Arg::new("translation")
+            clap::Arg::new("lang_sources")
                 .short('t')
                 .long("translation")
                 .help("Language to source translation from")

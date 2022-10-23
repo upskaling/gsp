@@ -6,19 +6,19 @@ use self::{cuneiform::cuneiform, tesseract::tesseract};
 use super::InputEngine;
 use which::which;
 
-pub struct Ocr {}
+pub struct Ocr {
+    pub lang: String,
+}
 
 impl InputEngine for Ocr {
     fn input(&self) -> String {
-        let lang = "fra";
-
         let screenshooter = screenshot::Screenshot::new().capture();
 
         let mut input = String::new();
         if which("tesseract").is_ok() {
-            input = tesseract(&screenshooter, lang);
+            input = tesseract(&screenshooter, &self.lang);
         } else if which("cuneiform").is_ok() {
-            input = cuneiform(&screenshooter, lang);
+            input = cuneiform(&screenshooter, &self.lang);
         } else {
             println!("Aucun outil de reconnaissance d'écriture n'est installé");
         }

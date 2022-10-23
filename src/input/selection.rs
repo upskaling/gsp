@@ -1,5 +1,5 @@
 use crate::input::InputEngine;
-use std::process::{Command, Stdio};
+use std::process::Command;
 
 pub struct Selection {}
 
@@ -7,7 +7,6 @@ impl InputEngine for Selection {
     fn input(&self) -> String {
         let output = Command::new("xclip")
             .arg("-o")
-            .stdout(Stdio::piped())
             .output()
             .expect("failed to execute process");
 
