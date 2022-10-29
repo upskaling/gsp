@@ -1,6 +1,6 @@
 use std::process::Command;
 
-use super::tts::TtsEgine;
+use super::TtsEgine;
 
 pub struct Espeak {
     pub lang: String,

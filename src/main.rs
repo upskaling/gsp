@@ -5,7 +5,7 @@ mod translate;
 mod tts;
 mod utils;
 
-use tts::tts::TtsEgine;
+use tts::TtsEgine;
 use utils::get_pidof;
 
 use crate::input::InputEngine;
@@ -15,7 +15,7 @@ use crate::translate::libretranslate::Libretranslate;
 use crate::translate::translate_engine::TranslateEngine;
 use crate::tts::espeak::Espeak;
 use crate::tts::pico::Pico;
-use crate::tts::tts::Tts;
+use crate::tts::Tts;
 use crate::utils::textutils::text_to_dict;
 
 fn main() {
