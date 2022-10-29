@@ -76,9 +76,9 @@ fn get_list_replace() -> Vec<(String, String)> {
     for file in path {
         if std::fs::metadata(&file).unwrap().is_file() {
             let file = std::fs::read_to_string(file).unwrap();
-            let file = file.split("\n").collect::<Vec<&str>>();
+            let file = file.split('\n').collect::<Vec<&str>>();
             for line in file {
-                let line = line.split("=").collect::<Vec<&str>>();
+                let line = line.split('=').collect::<Vec<&str>>();
 
                 if line.len() != 2 {
                     continue;
@@ -103,7 +103,7 @@ pub fn replace(text: &str) -> String {
         }
     }
 
-    return text.to_string();
+    text.to_string()
 }
 
 pub fn text_to_dict(text: &str) -> String {

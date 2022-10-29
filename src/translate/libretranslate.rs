@@ -59,7 +59,7 @@ impl TranslateEngine for Libretranslate {
         let body: serde_json::Value = serde_json::from_str(&body).unwrap();
 
         if body["translatedText"].is_null() {
-            return String::from("");
+            String::from("")
         } else {
             body["translatedText"].to_string()
         }

@@ -27,8 +27,8 @@ pub fn tesseract(screenshooter: &str, lang: &str) -> String {
         .unwrap()
         .trim()
         .to_string()
-        .replace("\n", " ")
-        .replace("\r", " ");
+        .replace('\n', " ")
+        .replace('\r', " ");
 
     std::fs::remove_file(format!("{}.txt", screenshot)).unwrap();
 

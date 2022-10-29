@@ -75,7 +75,7 @@ fn main() {
             _ => Box::new(Libretranslate {}),
         };
 
-        text = translate.translate(&text, &lang_sources, &lang_targets);
+        text = translate.translate(&text, lang_sources, lang_targets);
     }
 
     let speed = args.get_one::<String>("speed").unwrap();

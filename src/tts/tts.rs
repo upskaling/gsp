@@ -42,7 +42,7 @@ impl Tts {
     pub fn speak(&self, engine: &mut impl TtsEgine) {
         engine
             .set_lang(self.lang.clone())
-            .set_speed(self.speed.clone())
+            .set_speed(self.speed)
             .speak(&self.text);
     }
 

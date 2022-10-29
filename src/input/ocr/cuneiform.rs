@@ -18,8 +18,8 @@ pub fn cuneiform(screenshooter: &str, lang: &str) -> String {
         .unwrap()
         .trim()
         .to_string()
-        .replace("\n", " ")
-        .replace("\r", " ");
+        .replace('\n', " ")
+        .replace('\r', " ");
 
     std::fs::remove_file(screenshot).unwrap();
 
