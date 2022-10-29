@@ -15,9 +15,8 @@ pub fn trim_whitespace(s: &str) -> String {
 // remove quotes ", ' and ` from a string
 pub fn remove_quotes(text: &str) -> String {
     let mut text = text.to_string();
-    let list_of_quotes = ['"', '\'', '`'];
-    for quote in list_of_quotes.iter() {
-        text = text.replace(*quote, "");
+    for quote in ['"', '\'', '`'] {
+        text = text.replace(quote, "");
     }
     text
 }
@@ -26,25 +25,23 @@ pub fn remove_special_characters(text: &str) -> String {
     let mut result = String::new();
     let mut list_of_special_characters = Vec::new();
 
-    let l = ['𝐀', '𝐚', '𝐴', '𝑎', '𝑨', '𝒂', '𝒜', '𝒶', '𝘢'];
-
-    for j in 0..l.len() {
+    for j in ['𝐀', '𝐚', '𝐴', '𝑎', '𝑨', '𝒂', '𝒜', '𝒶', '𝘢'] {
         for i in 0..26 {
-            let lower_case_letter = 97 + i;
-
-            list_of_special_characters.push((l[j] as u32 + i, lower_case_letter as u8 as char));
+            list_of_special_characters.push((j as u32 + i, (97 + i) as u8 as char));
         }
     }
 
     for c in text.chars() {
         let mut found = false;
-        for i in 0..list_of_special_characters.len() {
-            if c as u32 == list_of_special_characters[i].0 {
-                result.push(list_of_special_characters[i].1);
+
+        for (special_character, character) in list_of_special_characters.iter() {
+            if c as u32 == *special_character {
+                result.push(*character);
                 found = true;
                 break;
             }
         }
+
         if !found {
             result.push(c);
         }
@@ -95,11 +92,9 @@ pub fn replace(text: &str) -> String {
     // Si le répertoire existe
     if std::path::Path::new("dict/fr_FR").exists() {
         let mut text = text.to_string();
-        // list les fichiers dans le dossier dict
-        let list_replace = get_list_replace();
 
-        for i in 0..list_replace.len() {
-            text = text.replace(&list_replace[i].0, &list_replace[i].1);
+        for (replace, by) in get_list_replace() {
+            text = text.replace(&replace, &by);
         }
     }
 
