@@ -1,5 +1,12 @@
-// remove multiple spaces in a string
-// https://stackoverflow.com/a/71864249
+/// remove multiple spaces in a string
+/// https://stackoverflow.com/a/71864249
+/// # Examples
+/// ```
+/// use utils::textutils::trim_whitespace;
+/// let s = "  a  b  c  ";
+/// let s = trim_whitespace(s);
+/// assert_eq!(s, "a b c");
+/// ```
 pub fn trim_whitespace(s: &str) -> String {
     // second attempt: only allocate a string
     let mut result = String::with_capacity(s.len());
@@ -12,7 +19,13 @@ pub fn trim_whitespace(s: &str) -> String {
     result
 }
 
-// remove quotes ", ' and ` from a string
+/// remove quotes ", ' and ` from a string
+/// # Examples
+/// ```
+/// use utils::textutils::remove_quotes;
+/// let s = "hello \"world\"";
+/// assert_eq!(remove_quotes(s), "hello world");
+/// ```
 pub fn remove_quotes(text: &str) -> String {
     let mut text = text.to_string();
     for quote in ['"', '\'', '`'] {
@@ -21,6 +34,14 @@ pub fn remove_quotes(text: &str) -> String {
     text
 }
 
+/// remove special characters
+/// # Examples
+/// ```
+/// use utils::textutils::remove_special_characters;
+/// let text = "𝐠𝐫𝐚𝐬 et 𝘪𝘵𝘢𝘭𝘪𝘤";
+/// let text = remove_special_characters(text);
+/// assert_eq!(text, "gras et italic");
+/// ```
 pub fn remove_special_characters(text: &str) -> String {
     let mut result = String::new();
     let mut list_of_special_characters = Vec::new();
@@ -50,8 +71,39 @@ pub fn remove_special_characters(text: &str) -> String {
     result
 }
 
+/// Parsé les hashtag
+/// # Examples
+/// ```
+/// use utils::textutils::parse_hashtag;
+/// let text = "#HelloWorld";
+/// let result = parse_hashtag(text);
+/// assert_eq!(result, "#Hello World");
+/// ```
+pub fn parse_hashtag(text: &str) -> String {
+    let mut result = String::new();
+    let mut is_hashtag = false;
+
+    for c in text.chars() {
+        if c == '#' {
+            is_hashtag = true;
+            continue;
+        }
+
+        if is_hashtag {
+            if c.is_uppercase() {
+                result.push(' ');
+            }
+            is_hashtag = false;
+        }
+
+        result.push(c);
+    }
+
+    result
+}
+
 // Lister tous les fichiers d'un répertoire
-pub fn list_files(path: &str) -> Vec<String> {
+fn list_files(path: &str) -> Vec<String> {
     let mut result = Vec::new();
 
     let paths = std::fs::read_dir(path).unwrap();
@@ -102,7 +154,8 @@ pub fn replace(text: &str) -> String {
 }
 
 pub fn text_to_dict(text: &str) -> String {
-    let mut text = text.to_string().to_lowercase();
+    let mut text = text.to_string();
+    text = parse_hashtag(&text);
     text = text.trim().to_string();
     text = trim_whitespace(&text);
     text = remove_quotes(&text);
