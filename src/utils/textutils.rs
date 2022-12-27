@@ -19,19 +19,64 @@ pub fn trim_whitespace(s: &str) -> String {
     result
 }
 
-/// remove quotes ", ' and ` from a string
-/// # Examples
-/// ```
-/// use utils::textutils::remove_quotes;
-/// let s = "hello \"world\"";
-/// assert_eq!(remove_quotes(s), "hello world");
-/// ```
-pub fn remove_quotes(text: &str) -> String {
-    let mut text = text.to_string();
-    for quote in ['"', '\'', '`'] {
-        text = text.replace(quote, "");
-    }
-    text
+pub fn get_list_remove_quotes() -> Vec<[char; 2]> {
+    return ['"', '\'', '`', '[', ']', '{', '}']
+        .iter()
+        .map(|x| [*x, ' '])
+        .collect();
+}
+
+/// list de caractères spéciaux à remplacer
+pub fn get_list_replace_char() -> Vec<[char; 2]> {
+    return [
+        ('ᴀ', 'a'),
+        ('ʙ', 'b'),
+        ('ᴄ', 'c'),
+        ('ᴅ', 'd'),
+        ('ᴇ', 'e'),
+        ('ɢ', 'g'),
+        ('ʜ', 'h'),
+        ('ɪ', 'i'),
+        ('ᴊ', 'j'),
+        ('ᴋ', 'k'),
+        ('ʟ', 'l'),
+        ('ᴍ', 'm'),
+        ('ɴ', 'n'),
+        ('ᴏ', 'o'),
+        ('ᴘ', 'p'),
+        ('ʀ', 'r'),
+        ('ᴛ', 't'),
+        ('ᴜ', 'u'),
+        ('ᴠ', 'v'),
+        ('ᴡ', 'w'),
+        ('ʏ', 'y'),
+        ('ᴢ', 'z'),
+        ('а', 'a'),
+        ('в', 'b'),
+        ('В', 'b'),
+        ('г', 'r'),
+        ('ғ', 'f'),
+        ('е', 'e'),
+        ('и', 'n'),
+        ('к', 'k'),
+        ('К', 'k'),
+        ('л', 'n'),
+        ('м', 'm'),
+        ('М', 'm'),
+        ('н', 'h'),
+        ('Н', 'H'),
+        ('о', 'o'),
+        ('р', 'p'),
+        ('Р', 'p'),
+        ('с', 'c'),
+        ('т', 't'),
+        ('Т', 'T'),
+        ('у', 'y'),
+        ('х', 'x'),
+    ]
+    .iter()
+    .map(|x| [x.0, x.1])
+    .collect();
 }
 
 /// remove special characters
@@ -43,32 +88,52 @@ pub fn remove_quotes(text: &str) -> String {
 /// assert_eq!(text, "gras et italic");
 /// ```
 pub fn remove_special_characters(text: &str) -> String {
-    let mut result = String::new();
     let mut list_of_special_characters = Vec::new();
 
-    for j in ['𝐀', '𝐚', '𝐴', '𝑎', '𝑨', '𝒂', '𝒜', '𝒶', '𝘢'] {
+    list_of_special_characters.append(&mut get_list_remove_quotes());
+
+    list_of_special_characters.append(&mut get_list_replace_char());
+
+    // Alphabet
+    for j in [
+        '𝐀', '𝐚',
+        '𝑨', '𝒂',
+        '𝒜', '𝒶',
+        '𝔸', '𝕒',
+        '𝕬', '𝖆',
+        '𝖠', '𝖺',
+        '𝗔', '𝗮',
+        '𝘈', '𝘢',
+        '𝘼', '𝙖',
+        '𝙰', '𝚊',
+        '𝐴', '𝑎',
+        '𝔄', '𝔞',
+        '𝓐','𝓪',
+    ] {
         for i in 0..26 {
-            list_of_special_characters.push((j as u32 + i, (97 + i) as u8 as char));
+            list_of_special_characters.push([
+                std::char::from_u32(j as u32 + i).unwrap(),
+                std::char::from_u32('a' as u32 + i).unwrap(),
+            ]);
         }
     }
 
-    for c in text.chars() {
-        let mut found = false;
-
-        for (special_character, character) in list_of_special_characters.iter() {
-            if c as u32 == *special_character {
-                result.push(*character);
-                found = true;
-                break;
-            }
-        }
-
-        if !found {
-            result.push(c);
+    // Chiffres
+    for j in ['𝟎', '𝟘', '𝟢', '𝟬', '𝟶', '𝟬', '𝟢'] {
+        for i in 0..10 {
+            list_of_special_characters.push([
+                std::char::from_u32(j as u32 + i).unwrap(),
+                std::char::from_u32('0' as u32 + i).unwrap(),
+            ]);
         }
     }
 
-    result
+    let mut text = text.to_string();
+    for i in list_of_special_characters {
+        text = text.replace(i[0], &i[1].to_string());
+    }
+
+    text
 }
 
 /// Parsé les hashtag
@@ -158,7 +223,6 @@ pub fn text_to_dict(text: &str) -> String {
     text = parse_hashtag(&text);
     text = text.trim().to_string();
     text = trim_whitespace(&text);
-    text = remove_quotes(&text);
     text = remove_special_characters(&text);
 
     text
