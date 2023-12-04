@@ -7,6 +7,7 @@ mod utils;
 
 use tts::TtsEgine;
 use utils::get_pidof;
+use utils::textutils::read_vars;
 
 use crate::input::InputEngine;
 use crate::player::paplay::Paplay;
@@ -60,6 +61,10 @@ fn main() {
     if text.is_empty() {
         println!("Aucun texte à lire");
         return;
+    }
+    
+    if args.contains_id("dev") {
+        text = read_vars(&text);
     }
 
     text = text_to_dict(&text);

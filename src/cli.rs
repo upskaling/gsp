@@ -63,6 +63,14 @@ pub fn build_app() -> ArgMatches {
                 .long("stop")
                 .help("Stop TTS engine")
                 .action(ArgAction::SetTrue),
+        )
+        // dev mode
+        .arg(
+            clap::Arg::new("dev")
+                .short('d')
+                .long("dev")
+                .help("dev mode for natural code reading example: Snake_case, kebab-case, CamelCase")
+                .action(ArgAction::SetTrue),
         );
 
     app.get_matches()

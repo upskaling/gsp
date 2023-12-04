@@ -227,3 +227,40 @@ pub fn text_to_dict(text: &str) -> String {
 
     text
 }
+
+
+fn parse_camel_case(text: &str) -> String {
+    let mut result = String::new();
+
+    let mut is_uppercase = false;
+    for c in text.chars() {
+        if c.is_uppercase() {
+            if !is_uppercase {
+                result.push(' ');
+            }
+            is_uppercase = true;
+        } else {
+            is_uppercase = false;
+        }
+
+        result.push(c);
+    }
+
+    result
+}
+
+pub fn read_vars(text: &str) -> String {
+    let mut text = text.to_string();
+
+    // on récupère les _,- par des espaces
+    // Snake_case et kebab-case
+    for i in ['_', '-'] {
+        text = text.replace(i, " ");
+    }
+
+    // on converti le texte example: "HelloWorld" en "Hello World"
+    // CamelCase
+    text = parse_camel_case(&text);
+
+    text
+}   
