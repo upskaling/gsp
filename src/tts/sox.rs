@@ -4,9 +4,8 @@ use std::process::{Command, Stdio};
 pub struct Sox {}
 
 impl PlayEngine for Sox {
-    
     fn play(&self, file: &str) {
-        Command::new("sox")       
+        Command::new("sox")
             .arg(file)
             .stdout(Stdio::piped())
             .output()

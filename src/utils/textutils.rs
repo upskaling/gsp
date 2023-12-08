@@ -96,19 +96,8 @@ pub fn remove_special_characters(text: &str) -> String {
 
     // Alphabet
     for j in [
-        '𝐀', '𝐚',
-        '𝑨', '𝒂',
-        '𝒜', '𝒶',
-        '𝔸', '𝕒',
-        '𝕬', '𝖆',
-        '𝖠', '𝖺',
-        '𝗔', '𝗮',
-        '𝘈', '𝘢',
-        '𝘼', '𝙖',
-        '𝙰', '𝚊',
-        '𝐴', '𝑎',
-        '𝔄', '𝔞',
-        '𝓐','𝓪',
+        '𝐀', '𝐚', '𝑨', '𝒂', '𝒜', '𝒶', '𝔸', '𝕒', '𝕬', '𝖆', '𝖠', '𝖺', '𝗔', '𝗮', '𝘈', '𝘢', '𝘼', '𝙖',
+        '𝙰', '𝚊', '𝐴', '𝑎', '𝔄', '𝔞', '𝓐', '𝓪',
     ] {
         for i in 0..26 {
             list_of_special_characters.push([
@@ -228,7 +217,6 @@ pub fn text_to_dict(text: &str) -> String {
     text
 }
 
-
 fn parse_camel_case(text: &str) -> String {
     let mut result = String::new();
 
@@ -263,4 +251,4 @@ pub fn read_vars(text: &str) -> String {
     text = parse_camel_case(&text);
 
     text
-}   
+}

@@ -1,4 +1,4 @@
-use std::process::{Stdio, Command};
+use std::process::{Command, Stdio};
 
 // gnome-screenshot --area --file=/tmp/screenshot.png
 pub fn gnome_screenshot_area(screenshooter: &str) {

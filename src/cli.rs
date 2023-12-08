@@ -69,7 +69,9 @@ pub fn build_app() -> ArgMatches {
             clap::Arg::new("dev")
                 .short('d')
                 .long("dev")
-                .help("dev mode for natural code reading example: Snake_case, kebab-case, CamelCase")
+                .help(
+                    "dev mode for natural code reading example: Snake_case, kebab-case, CamelCase",
+                )
                 .action(ArgAction::SetTrue),
         );
 
