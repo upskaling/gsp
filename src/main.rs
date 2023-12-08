@@ -6,14 +6,12 @@ mod tts;
 mod utils;
 
 use input::Input;
+use translate::Translate;
 use tts::TtsEgine;
 use utils::get_pidof;
 use utils::textutils::read_vars;
 
 use crate::player::paplay::Paplay;
-use crate::translate::argos_translate::ArgosTranslate;
-use crate::translate::libretranslate::Libretranslate;
-use crate::translate::translate_engine::TranslateEngine;
 use crate::tts::espeak::Espeak;
 use crate::tts::pico::Pico;
 use crate::tts::Tts;
@@ -54,7 +52,7 @@ fn main() {
         println!("Aucun texte à lire");
         return;
     }
-    
+
     if *args.get_one::<bool>("dev").unwrap() {
         text = read_vars(&text);
     }
@@ -66,13 +64,12 @@ fn main() {
     if args.contains_id("lang_sources") {
         let engine = args.get_one::<String>("engine-translation").unwrap();
 
-        let translate: Box<dyn TranslateEngine> = match engine.as_str() {
-            "libretranslate" => Box::new(Libretranslate {}),
-            "argos_translate" => Box::new(ArgosTranslate {}),
-            _ => Box::new(Libretranslate {}),
-        };
-
-        text = translate.translate(&text, lang_sources, lang_targets);
+        text = Translate {}.translate(
+            engine.as_str(),
+            &text,
+            args.get_one::<String>("lang_sources").unwrap().as_str(),
+            args.get_one::<String>("lang_targets").unwrap().as_str(),
+        );
     }
 
     let speed = args.get_one::<String>("speed").unwrap();

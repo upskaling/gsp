@@ -1,5 +1,6 @@
-use crate::translate::translate_engine::TranslateEngine;
 use std::process::{Command, Stdio};
+
+use super::TranslateEngine;
 
 pub struct ArgosTranslate {}
 
@@ -17,7 +18,6 @@ impl TranslateEngine for ArgosTranslate {
             .stdout(Stdio::piped())
             .output()
             .expect("failed to execute process");
-
 
         let stderr = String::from_utf8_lossy(&output.stderr);
         if stderr != "" {
