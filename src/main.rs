@@ -5,11 +5,11 @@ mod translate;
 mod tts;
 mod utils;
 
+use input::Input;
 use tts::TtsEgine;
 use utils::get_pidof;
 use utils::textutils::read_vars;
 
-use crate::input::InputEngine;
 use crate::player::paplay::Paplay;
 use crate::translate::argos_translate::ArgosTranslate;
 use crate::translate::libretranslate::Libretranslate;
@@ -45,25 +45,17 @@ fn main() {
         lang_sources = args.get_one::<String>("lang_sources").unwrap();
     }
 
-    let source = args.get_one::<String>("source").unwrap();
-
-    let mut text = match source.as_str() {
-        "selection" => input::selection::Selection {}.input(),
-        "clipboard" => input::clipboard::Clipboard {}.input(),
-        "stdin" => input::stdin::Stdin {}.input(),
-        "ocr" => input::ocr::Ocr {
-            lang: lang_sources.to_string(),
-        }
-        .input(),
-        _ => String::new(),
-    };
+    let mut text = Input::new()
+        .set_source(args.get_one::<String>("source").unwrap().clone())
+        .set_lang(lang_sources.clone())
+        .input();
 
     if text.is_empty() {
         println!("Aucun texte à lire");
         return;
     }
     
-    if args.contains_id("dev") {
+    if *args.get_one::<bool>("dev").unwrap() {
         text = read_vars(&text);
     }
 
