@@ -43,11 +43,13 @@ impl Tts {
         self
     }
 
-    pub fn speak(&self, engine: &mut impl TtsEgine) {
+    pub fn speak(&mut self, engine: &mut impl TtsEgine) -> &mut Tts {
         engine
             .set_lang(self.lang.clone())
             .set_speed(self.speed)
             .speak(&self.text);
+
+        self
     }
 
     pub fn play(&self, engine: impl PlayEngine) {
@@ -56,5 +58,23 @@ impl Tts {
 
     pub fn stop(&self, engine: impl PlayEngine) {
         engine.stop();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{espeak::Espeak, *};
+
+    #[test]
+    fn test_tts() {
+        let _ = std::fs::remove_file("/dev/shm/out.wav");
+
+        let mut tts = Tts::new();
+        tts.set_lang(String::from("fr-FR"))
+            .set_speed(1)
+            .set_text(String::from("Bonjour"))
+            .speak(&mut Espeak::new());
+
+        assert_eq!(std::path::Path::new("/dev/shm/out.wav").exists(), true);
     }
 }

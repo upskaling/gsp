@@ -1,5 +1,5 @@
 use super::TtsEgine;
-use crate::utils::textutils::replace;
+use crate::utils::textutils::TextUtils;
 use std::process::{Command, Stdio};
 
 fn pico_effect(text: &str, speed: i32, pitch: i32, volume: i32) -> String {
@@ -19,7 +19,7 @@ pub struct Pico {
 
 impl TtsEgine for Pico {
     fn speak(&self, text: &str) {
-        let text = replace(text);
+        let text = TextUtils::replace(text);
         let effect = pico_effect(&text, self.speed, 100, 120);
 
         Command::new("pico2wave")

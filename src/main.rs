@@ -5,24 +5,19 @@ mod translate;
 mod tts;
 mod utils;
 
+use clap::Parser;
+use cli::Args;
 use input::Input;
-use translate::Translate;
-use tts::TtsEgine;
-use utils::get_pidof;
-use utils::textutils::read_vars;
-
-use crate::player::paplay::Paplay;
-use crate::tts::espeak::Espeak;
-use crate::tts::pico::Pico;
-use crate::tts::Tts;
-use crate::utils::textutils::text_to_dict;
+use player::paplay::Paplay;
+use tts::{espeak::Espeak, pico::Pico, Tts, TtsEgine};
+use utils::{get_pidof, textutils::TextUtils};
 
 fn main() {
-    let args = cli::build_app();
+    let args = Args::parse();
 
     let mut tts = Tts::new();
 
-    if *args.get_one::<bool>("stop").unwrap() {
+    if args.stop {
         tts.stop(Paplay {});
         return;
     }
@@ -33,59 +28,52 @@ fn main() {
         return;
     }
 
-    if !args.contains_id("source") {
-        println!("Aucune source n'a été spécifiée");
-        return;
-    }
-
-    let mut lang_sources = args.get_one::<String>("lang_targets").unwrap();
-    if args.contains_id("lang_sources") {
-        lang_sources = args.get_one::<String>("lang_sources").unwrap();
-    }
-
-    let mut text = Input::new()
-        .set_source(args.get_one::<String>("source").unwrap().clone())
-        .set_lang(lang_sources.clone())
-        .input();
+    let mut text = Input::new(
+        args.source,
+        args.lang_sources
+            .clone()
+            .unwrap_or(args.lang_targets.clone()),
+    )
+    .input();
 
     if text.is_empty() {
         println!("Aucun texte à lire");
         return;
     }
 
-    if *args.get_one::<bool>("dev").unwrap() {
-        text = read_vars(&text);
+    let mut text_utils = TextUtils::new(text.clone());
+
+    if args.dev {
+        text_utils.read_vars();
     }
 
-    text = text_to_dict(&text);
+    text_utils.parse_hashtag();
+    text_utils.trim_whitespace();
+    text_utils.remove_special_characters();
 
-    let lang_targets = args.get_one::<String>("lang_targets").unwrap();
+    text = text_utils.as_str().to_string();
 
-    if args.contains_id("lang_sources") {
-        let engine = args.get_one::<String>("engine-translation").unwrap();
-
-        text = Translate {}.translate(
-            engine.as_str(),
-            &text,
-            args.get_one::<String>("lang_sources").unwrap().as_str(),
-            args.get_one::<String>("lang_targets").unwrap().as_str(),
+    if args.lang_sources.is_some() {
+        text = translate::Translate::new().translate(
+            args.engine_translation.as_str(),
+            text_utils.as_str(),
+            args.lang_sources.as_ref().unwrap().as_str(),
+            args.lang_targets.as_str(),
         );
     }
 
-    let speed = args.get_one::<String>("speed").unwrap();
+    let speed = args.speed.as_str();
     let speed = speed.parse::<f32>().unwrap() * 100.0;
     let speed = speed as i32;
 
-    tts.set_lang(lang_targets.to_string())
+    tts.set_lang(args.lang_targets.to_string())
         .set_speed(speed)
         .set_text(text);
 
-    let engine = args.get_one::<String>("engine-tts").unwrap();
-
-    match engine.as_str() {
-        "pico" => tts.speak(&mut Pico::new()),
+    match args.engine_tts.as_str() {
         "espeak" => tts.speak(&mut Espeak::new()),
+        "pico" => tts.speak(&mut Pico::new()),
         _ => tts.speak(&mut Pico::new()),
     }
-    tts.play(Paplay {});
+    .play(Paplay {});
 }

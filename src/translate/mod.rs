@@ -8,6 +8,10 @@ pub trait TranslateEngine {
 pub struct Translate {}
 
 impl Translate {
+    pub fn new() -> Translate {
+        Translate {}
+    }
+
     pub fn translate(&self, engine: &str, text: &str, lang_from: &str, lang_to: &str) -> String {
         match engine {
             "argos_translate" => {

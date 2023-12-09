@@ -13,19 +13,21 @@ pub struct Input {
 }
 
 impl Input {
-    pub fn new() -> Input {
+    pub fn new(source: String, lang: String) -> Input {
         Input {
             source: String::from(""),
             lang: String::from(""),
         }
+        .set_source(source)
+        .set_lang(lang)
     }
 
-    pub fn set_source(&mut self, source: String) -> &mut Input {
+    pub fn set_source(mut self, source: String) -> Input {
         self.source = source;
         self
     }
 
-    pub fn set_lang(&mut self, lang: String) -> &mut Input {
+    pub fn set_lang(mut self, lang: String) -> Input {
         self.lang = lang;
         self
     }

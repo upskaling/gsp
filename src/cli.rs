@@ -1,79 +1,77 @@
-use clap::{Arg, ArgAction, ArgMatches, Command};
+use clap::{ArgAction, Parser};
 
-pub fn build_app() -> ArgMatches {
-    let app = Command::new("gsp")
-        .version("0.1.0")
-        .about("Read text from selection, clipboard, image or file")
-        .long_about("Read text from selection, clipboard, image or file")
-        // [selection,clipboard,image,file,ocr]
-        .arg(
-            Arg::new("source")
-                .short('s')
-                .long("source")
-                .help("Source of text to read")
-                .value_parser(["selection", "clipboard", "file", "ocr", "stdin"]),
-        )
-        // tts [pico,espeak,spd-say]
-        .arg(
-            clap::Arg::new("engine-tts")
-                .short('y')
-                .long("tts")
-                .help("Read text using specified TTS engine")
-                .default_value("pico")
-                .value_parser(["pico", "espeak", "spd-say"]),
-        )
-        // lang [de-DE,en-GB,en-US,es-ES,fr-FR,it-IT]
-        .arg(
-            clap::Arg::new("lang_targets")
-                .short('l')
-                .long("lang")
-                .help("Set language for TTS engine")
-                .default_value("fr-FR")
-                .value_parser(["de-DE", "en-GB", "en-US", "es-ES", "fr-FR", "it-IT"]),
-        )
-        // translation [de-DE,en-GB,en-US,es-ES,fr-FR,it-IT]
-        .arg(
-            clap::Arg::new("lang_sources")
-                .short('t')
-                .long("translation")
-                .help("Language to source translation from")
-                .value_parser(["de-DE", "en-GB", "en-US", "es-ES", "fr-FR", "it-IT"]),
-        )
-        // engine-translation
-        .arg(
-            clap::Arg::new("engine-translation")
-                .short('e')
-                .long("engine-translation")
-                .help("Translation engine to use")
-                .default_value("libretranslate")
-                .value_parser(["libretranslate", "argos_translate", "translate_shell"]),
-        )
-        // speed [{0.6,0.8,1,1.2,1.4,1.6,1.8,2,2.2}]
-        .arg(
-            clap::Arg::new("speed")
-                .long("speed")
-                .help("Set speed for TTS engine")
-                .default_value("1")
-                .value_parser(["0.6", "0.8", "1", "1.2", "1.4", "1.6", "1.8", "2", "2.2"]),
-        )
-        // stop
-        .arg(
-            clap::Arg::new("stop")
-                .short('p')
-                .long("stop")
-                .help("Stop TTS engine")
-                .action(ArgAction::SetTrue),
-        )
-        // dev mode
-        .arg(
-            clap::Arg::new("dev")
-                .short('d')
-                .long("dev")
-                .help(
-                    "dev mode for natural code reading example: Snake_case, kebab-case, CamelCase",
-                )
-                .action(ArgAction::SetTrue),
-        );
+#[derive(Parser, Debug)]
+#[command(
+    name = "gsp",
+    version,
+    about = "Read text from selection, clipboard, image or file",
+    long_about = "Read text from selection, clipboard, image or file"
+)]
+pub struct Args {
+    #[arg(
+        short = 's',
+        long,
+        help = "Source of text to read",
+        value_parser = ["selection", "clipboard", "file", "ocr", "stdin"]
+    )]
+    pub source: String,
 
-    app.get_matches()
+    #[arg(
+        short = 'y',
+        long = "tts",
+        help = "Read text using specified TTS engine",
+        default_value = "pico",
+        value_parser = ["pico", "espeak", "spd-say"]
+    )]
+    pub engine_tts: String,
+
+    #[arg(
+        short = 't',
+        long = "translation",
+        help = "Language to source translation from",
+        value_parser = ["de-DE", "en-GB", "en-US", "es-ES", "fr-FR", "it-IT"]
+    )]
+    pub lang_sources: Option<String>,
+
+    #[arg(
+        short = 'e',
+        long= "engine-translation",
+        help = "Translation engine to use",
+        default_value = "libretranslate",
+        value_parser = ["libretranslate", "argos_translate", "translate_shell"]
+    )]
+    pub engine_translation: String,
+
+    #[arg(
+        short = 'l',
+        long = "lang",
+        help = "Set language for TTS engine",
+        default_value = "fr-FR",
+        value_parser = ["de-DE", "en-GB", "en-US", "es-ES", "fr-FR", "it-IT"]
+    )]
+    pub lang_targets: String,
+
+    #[arg(
+        long,
+        help = "Set speed for TTS engine",
+        default_value = "1",
+        value_parser = ["0.6", "0.8", "1", "1.2", "1.4", "1.6", "1.8", "2", "2.2"]
+    )]
+    pub speed: String,
+
+    #[arg(
+        short = 'p',
+        long,
+        help = "Stop TTS engine",
+        action = ArgAction::SetTrue
+    )]
+    pub stop: bool,
+
+    #[arg(
+        short,
+        long,
+        help = "dev mode for natural code reading example: Snake_case, kebab-case, CamelCase",
+        action = ArgAction::SetTrue
+    )]
+    pub dev: bool,
 }
