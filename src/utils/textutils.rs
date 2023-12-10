@@ -1,28 +1,30 @@
 /// Parsé les hashtag
 /// # Examples
 /// ```
-/// let text = String::from("#HelloWorld");
+/// let text = String::from("#helloWorld");
 /// let result = parse_hashtag(text);
-/// assert_eq!(result, " # Hello World");
-///
+/// assert_eq!(result, " #hello World");
+/// ```
 pub fn parse_hashtag(string: &str) -> String {
     let mut result = String::new();
 
-    let mut is_uppercase = false;
-    for c in string.chars() {
-        if c.is_uppercase() {
-            if !is_uppercase {
-                result.push(' ');
+    string.split_whitespace().for_each(|w| {
+        if w.starts_with('#') {
+            for c in w.chars() {
+                if c.is_uppercase() {
+                    result.push(' ');
+                }
+
+                result.push(c);
             }
-            is_uppercase = true;
         } else {
-            is_uppercase = false;
+            result.push_str(w);
         }
 
-        result.push(c);
-    }
+        result.push(' ');
+    });
 
-    result
+    trim_whitespace(&result)
 }
 
 /// remove multiple spaces in a string
@@ -247,9 +249,16 @@ fn list_files(path: &str) -> Vec<String> {
 
 #[test]
 fn test_parse_hashtag() {
-    let mut text = String::from("#HelloWorld");
+    let mut text = String::from("#helloWorld");
     text = parse_hashtag(&text);
-    assert_eq!(text.as_str(), "# Hello World");
+    assert_eq!(text.as_str(), "#hello World");
+}
+
+#[test]
+fn test_parse_hashtag2() {
+    let mut text = String::from("le #chat est #mignon");
+    text = parse_hashtag(&text);
+    assert_eq!(text.as_str(), "le #chat est #mignon");
 }
 
 #[test]
