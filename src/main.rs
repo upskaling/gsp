@@ -10,7 +10,7 @@ use cli::Args;
 use input::Input;
 use player::paplay::Paplay;
 use tts::{espeak::Espeak, pico::Pico, Tts, TtsEgine};
-use utils::{get_pidof, textutils::TextUtils};
+use utils::{get_pidof, textutils::*};
 
 fn main() {
     let args = Args::parse();
@@ -41,22 +41,18 @@ fn main() {
         return;
     }
 
-    let mut text_utils = TextUtils::new(text.clone());
-
     if args.dev {
-        text_utils.read_vars();
+        text = read_vars(&text);
     }
 
-    text_utils.parse_hashtag();
-    text_utils.trim_whitespace();
-    text_utils.remove_special_characters();
-
-    text = text_utils.as_str().to_string();
+    text = parse_hashtag(&text);
+    text = trim_whitespace(&text);
+    text = remove_special_characters(&text);
 
     if args.lang_sources.is_some() {
         text = translate::Translate::new().translate(
             args.engine_translation.as_str(),
-            text_utils.as_str(),
+            text.as_str(),
             args.lang_sources.as_ref().unwrap().as_str(),
             args.lang_targets.as_str(),
         );

@@ -75,6 +75,6 @@ mod tests {
             .set_text(String::from("Bonjour"))
             .speak(&mut Espeak::new());
 
-        assert_eq!(std::path::Path::new("/dev/shm/out.wav").exists(), true);
+        assert!(std::path::Path::new("/dev/shm/out.wav").exists());
     }
 }
