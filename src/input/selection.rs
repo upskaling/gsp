@@ -1,17 +1,22 @@
 use crate::input::InputEngine;
-use std::process::Command;
+use std::time::Duration;
+use x11_clipboard::Clipboard;
 
 pub struct Selection {}
 
 impl InputEngine for Selection {
     fn input(&self) -> String {
-        let output = Command::new("xclip")
-            .arg("-o")
-            .output()
-            .expect("failed to execute process");
+        let clipboard = Clipboard::new().unwrap();
 
-        let clipboard = String::from_utf8_lossy(&output.stdout).to_string();
+        let selection = clipboard
+            .load(
+                clipboard.setter.atoms.primary,
+                clipboard.setter.atoms.utf8_string,
+                clipboard.setter.atoms.property,
+                Duration::from_secs(3),
+            )
+            .unwrap();
 
-        clipboard
+        String::from_utf8(selection).unwrap()
     }
 }
