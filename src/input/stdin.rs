@@ -9,7 +9,7 @@ impl InputEngine for Stdin {
         loop {
             std::io::stdin().read_line(&mut line).unwrap();
             input.push_str(&line);
-            if line == "" {
+            if line.is_empty() {
                 break;
             }
             line.clear();
