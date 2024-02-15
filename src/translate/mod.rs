@@ -1,5 +1,6 @@
 mod argos_translate;
 mod libretranslate;
+mod translate_locally;
 
 pub trait TranslateEngine {
     fn translate(&self, text: &str, lang_from: &str, lang_to: &str) -> String;
@@ -14,6 +15,9 @@ impl Translate {
 
     pub fn translate(&self, engine: &str, text: &str, lang_from: &str, lang_to: &str) -> String {
         match engine {
+            "translate_locally" => {
+                translate_locally::TranslateLocally {}.translate(text, lang_from, lang_to)
+            }
             "argos_translate" => {
                 argos_translate::ArgosTranslate {}.translate(text, lang_from, lang_to)
             }

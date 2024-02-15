@@ -38,7 +38,7 @@ pub struct Args {
         long= "engine-translation",
         help = "Translation engine to use",
         default_value = "libretranslate",
-        value_parser = ["libretranslate", "argos_translate", "translate_shell"]
+        value_parser = ["libretranslate", "argos_translate", "translate_shell", "translate_locally"]
     )]
     pub engine_translation: String,
 
