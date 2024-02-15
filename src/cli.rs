@@ -29,7 +29,7 @@ pub struct Args {
         short = 't',
         long = "translation",
         help = "Language to source translation from",
-        value_parser = ["de-DE", "en-GB", "en-US", "es-ES", "fr-FR", "it-IT"]
+        value_parser = ["de-DE", "en-GB", "en-US", "es-ES", "fr-FR", "it-IT", "auto"]
     )]
     pub lang_sources: Option<String>,
 
