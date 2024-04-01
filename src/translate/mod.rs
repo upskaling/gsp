@@ -23,7 +23,7 @@ impl Translate {
             let languages = vec![English, French];
             let detector = LanguageDetectorBuilder::from_languages(&languages).build();
 
-            lang_from = match detector.detect_language_of(text).unwrap() {
+            lang_from = match detector.detect_language_of(text).unwrap_or(French) {
                 English => "en-US".to_string(),
                 French => "fr-FR".to_string(),
             };
