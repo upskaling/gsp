@@ -5,8 +5,6 @@ use super::TtsEgine;
 pub struct Espeak {
     pub lang: String,
     pub speed: i32,
-    pub pitch: i32,
-    pub volume: i32,
     pub path: String,
 }
 
@@ -41,8 +39,6 @@ impl TtsEgine for Espeak {
         Espeak {
             lang: String::from("fr-FR"),
             speed: 1,
-            pitch: 1,
-            volume: 1,
             path: String::from("/dev/shm/out.wav"),
         }
     }

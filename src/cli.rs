@@ -21,7 +21,7 @@ pub struct Args {
         long = "tts",
         help = "Read text using specified TTS engine",
         default_value = "pico",
-        value_parser = ["pico", "espeak", "spd-say"]
+        value_parser = ["pico", "espeak"]
     )]
     pub engine_tts: String,
 

@@ -149,12 +149,18 @@ fn get_list_replace_char() -> Vec<[char; 2]> {
         ('ʏ', 'y'),
         ('ᴢ', 'z'),
         ('а', 'a'),
+        ('А', 'A'),
         ('в', 'b'),
         ('В', 'b'),
         ('г', 'r'),
         ('ғ', 'f'),
         ('е', 'e'),
+        ('Е', 'E'),
+        ('ѕ', 's'),
+        ('Ѕ', 'S'),
         ('и', 'n'),
+        ('і', 'i'),
+        ('І', 'I'),
         ('к', 'k'),
         ('К', 'k'),
         ('л', 'n'),
@@ -163,9 +169,11 @@ fn get_list_replace_char() -> Vec<[char; 2]> {
         ('н', 'h'),
         ('Н', 'H'),
         ('о', 'o'),
+        ('О', 'O'),
         ('р', 'p'),
         ('Р', 'p'),
         ('с', 'c'),
+        ('С', 'C'),
         ('т', 't'),
         ('Т', 'T'),
         ('у', 'y'),
@@ -273,6 +281,14 @@ fn test_remove_special_characters() {
     let mut text = String::from("𝐠𝐫𝐚𝐬 et 𝘪𝘵𝘢𝘭𝘪𝘤");
     text = remove_special_characters(&text);
     assert_eq!(text.as_str(), "gras et italic");
+}
+
+#[test]
+fn test_replace_special_chars() {
+    let text = String::from("С і І ѕ");
+    let text = remove_special_characters(&text);
+
+    assert_eq!(text, "C i I s");
 }
 
 #[test]

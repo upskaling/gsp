@@ -1,6 +1,5 @@
 pub mod espeak;
 pub mod pico;
-pub mod sox;
 
 use crate::player::PlayEngine;
 
