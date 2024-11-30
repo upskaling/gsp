@@ -43,6 +43,7 @@ fn main() {
 
     if args.dev {
         text = read_vars(&text);
+        text = text.to_lowercase();
     }
 
     text = parse_hashtag(&text);
