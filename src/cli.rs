@@ -1,5 +1,7 @@
 use clap::{ArgAction, Parser};
 
+use crate::translate;
+
 #[derive(Parser, Debug)]
 #[command(
     name = "gsp",
@@ -38,7 +40,7 @@ pub struct Args {
         long= "engine-translation",
         help = "Translation engine to use",
         default_value = "libretranslate",
-        value_parser = ["libretranslate", "argos_translate", "translate_shell", "translate_locally"]
+        value_parser =  translate::Translate::list_available_engines()
     )]
     pub engine_translation: String,
 

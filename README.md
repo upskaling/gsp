@@ -146,7 +146,6 @@ cp ./gsp ~/.local/bin/
 
 - `libretranslate`
 - `argos_translate`
-- `translate_shell`
 - `translate_locally`
 
 ### Vitesses Supportées

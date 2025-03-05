@@ -7,6 +7,7 @@ use lingua::LanguageDetectorBuilder;
 
 pub trait TranslateEngine {
     fn translate(&self, text: &str, lang_from: &str, lang_to: &str) -> String;
+    fn is_available(&self) -> bool;
 }
 
 pub struct Translate {}
@@ -45,5 +46,20 @@ impl Translate {
             }
             _ => libretranslate::Libretranslate {}.translate(text, &lang_from, lang_to),
         }
+    }
+
+    pub fn list_available_engines() -> Vec<&'static str> {
+        let engines = ["libretranslate", "argos_translate", "translate_locally"];
+
+        engines
+            .iter()
+            .filter(|&&engine| match engine {
+                "libretranslate" => libretranslate::Libretranslate {}.is_available(),
+                "argos_translate" => argos_translate::ArgosTranslate {}.is_available(),
+                "translate_locally" => translate_locally::TranslateLocally {}.is_available(),
+                _ => false,
+            })
+            .cloned()
+            .collect()
     }
 }

@@ -1,5 +1,7 @@
 use std::process::{Command, Stdio};
 
+use crate::utils::command_exists;
+
 use super::TranslateEngine;
 
 pub struct ArgosTranslate {}
@@ -28,5 +30,9 @@ impl TranslateEngine for ArgosTranslate {
         let output = output.trim();
 
         output.to_string()
+    }
+
+    fn is_available(&self) -> bool {
+        command_exists("argos-translate-cli")
     }
 }

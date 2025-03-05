@@ -35,6 +35,8 @@ pub struct TranslateResponseTargetData {
     pub text: String,
 }
 
+use crate::utils::command_exists;
+
 use super::TranslateEngine;
 
 pub struct TranslateLocally {}
@@ -82,5 +84,9 @@ impl TranslateEngine for TranslateLocally {
         }
 
         panic!("la réponse ne contient pas de data");
+    }
+
+    fn is_available(&self) -> bool {
+        command_exists("translateLocally")
     }
 }

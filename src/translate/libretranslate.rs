@@ -65,4 +65,8 @@ impl TranslateEngine for Libretranslate {
             body["translatedText"].to_string()
         }
     }
+
+    fn is_available(&self) -> bool {
+        true
+    }
 }

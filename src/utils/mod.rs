@@ -1,3 +1,5 @@
+use std::process::Command;
+
 use psutil::process::{processes, Process, ProcessError};
 
 pub mod textutils;
@@ -21,4 +23,12 @@ fn get_pid(process: Result<Process, ProcessError>, process_name: &str) -> Option
     }
 
     None
+}
+
+pub fn command_exists(cmd: &str) -> bool {
+    Command::new("which")
+        .arg(cmd)
+        .output()
+        .map(|output| output.status.success())
+        .unwrap_or(false)
 }
