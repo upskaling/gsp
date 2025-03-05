@@ -1,7 +1,7 @@
 pub mod espeak;
 pub mod pico;
 
-use crate::player::PlayEngine;
+use crate::{player::PlayEngine, utils::command_exists};
 
 pub trait TtsEgine {
     fn new() -> Self;
@@ -57,6 +57,20 @@ impl Tts {
 
     pub fn stop(&self, engine: impl PlayEngine) {
         engine.stop();
+    }
+
+    pub fn list_available_engines() -> Vec<&'static str> {
+        let engines = ["pico", "espeak"];
+
+        engines
+            .iter()
+            .filter(|&&engine| match engine {
+                "pico" => command_exists("pico2wave"),
+                "espeak" => command_exists("espeak"),
+                _ => false,
+            })
+            .cloned()
+            .collect()
     }
 }
 

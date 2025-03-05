@@ -1,6 +1,6 @@
 use clap::{ArgAction, Parser};
 
-use crate::translate;
+use crate::{translate, tts};
 
 #[derive(Parser, Debug)]
 #[command(
@@ -23,7 +23,7 @@ pub struct Args {
         long = "tts",
         help = "Read text using specified TTS engine",
         default_value = "pico",
-        value_parser = ["pico", "espeak"]
+        value_parser = tts::Tts::list_available_engines()
     )]
     pub engine_tts: String,
 
