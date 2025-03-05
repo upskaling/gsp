@@ -15,57 +15,34 @@ use utils::{get_pidof, textutils::*};
 fn main() {
     let args = Args::parse();
 
-    let mut tts = Tts::new();
-
     if args.stop {
-        tts.stop(Paplay {});
+        stop_tts();
         return;
     }
 
-    if get_pidof("gsp").len() > 1 {
+    if is_another_instance_running() {
         println!("Une autre instance du programme est en cours");
-        tts.stop(Paplay {});
+        stop_tts();
         return;
     }
 
-    let mut text = Input::new(
-        args.source,
-        args.lang_sources
-            .clone()
-            .unwrap_or(args.lang_targets.clone()),
-    )
-    .input();
+    let text = match get_input_text(&args) {
+        Ok(text) => text,
+        Err(e) => {
+            eprintln!("Erreur lors de la récupération du texte : {}", e);
+            return;
+        }
+    };
 
-    if text.is_empty() {
-        println!("Aucun texte à lire");
-        return;
-    }
+    let text = preprocess_text(&args, text);
 
-    if args.dev {
-        text = read_vars(&text);
-        text = text.to_lowercase();
-    }
+    let translated_text = if let Some(ref lang_sources) = args.lang_sources {
+        translate_text(&args, lang_sources, text)
+    } else {
+        text
+    };
 
-    text = parse_hashtag(&text);
-    text = trim_whitespace(&text);
-    text = remove_special_characters(&text);
-
-    if args.lang_sources.is_some() {
-        text = translate::Translate::new().translate(
-            args.engine_translation.as_str(),
-            text.as_str(),
-            args.lang_sources.as_ref().unwrap().as_str(),
-            args.lang_targets.as_str(),
-        );
-    }
-
-    let speed = args.speed.as_str();
-    let speed = speed.parse::<f32>().unwrap() * 100.0;
-    let speed = speed as i32;
-
-    tts.set_lang(args.lang_targets.to_string())
-        .set_speed(speed)
-        .set_text(text);
+    let mut tts = configure_tts(&args, translated_text);
 
     match args.engine_tts.as_str() {
         "espeak" => tts.speak(&mut Espeak::new()),
@@ -73,4 +50,63 @@ fn main() {
         _ => tts.speak(&mut Pico::new()),
     }
     .play(Paplay {});
+}
+
+fn stop_tts() {
+    Tts::new().stop(Paplay {});
+}
+
+fn is_another_instance_running() -> bool {
+    get_pidof("gsp").len() > 1
+}
+
+fn get_input_text(args: &Args) -> Result<String, String> {
+    let text = Input::new(
+        args.source.clone(),
+        args.lang_sources
+            .clone()
+            .unwrap_or(args.lang_targets.clone()),
+    )
+    .input();
+
+    if text.is_empty() {
+        return Err("Aucun texte à lire".to_string());
+    }
+
+    Ok(text)
+}
+
+fn preprocess_text(args: &Args, text: String) -> String {
+    let mut text = if args.dev {
+        read_vars(&text).to_lowercase()
+    } else {
+        text
+    };
+
+    text = parse_hashtag(&text);
+    text = trim_whitespace(&text);
+    text = remove_special_characters(&text);
+
+    text
+}
+
+fn translate_text(args: &Args, lang_sources: &str, text: String) -> String {
+    translate::Translate::new().translate(
+        args.engine_translation.as_str(),
+        text.as_str(),
+        lang_sources,
+        args.lang_targets.as_str(),
+    )
+}
+
+fn configure_tts(args: &Args, text: String) -> Tts {
+    let speed = args.speed.parse::<f32>().unwrap_or(1.0) * 100.0;
+    let speed = speed as i32;
+
+    let mut tts = Tts::new();
+    tts.set_lang(args.lang_targets.to_string())
+        .set_speed(speed)
+        .set_text(text);
+
+    tts
 }
