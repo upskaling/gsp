@@ -6,7 +6,12 @@ use super::TranslateEngine;
 pub struct Libretranslate {}
 
 impl TranslateEngine for Libretranslate {
-    fn translate(&self, text: &str, lang_from: &str, lang_to: &str) -> String {
+    fn translate(
+        &self,
+        text: &str,
+        lang_from: &str,
+        lang_to: &str,
+    ) -> Result<String, Box<dyn std::error::Error>> {
         let url = "https://libretranslate.com/translate";
 
         // request user agent
@@ -56,13 +61,13 @@ impl TranslateEngine for Libretranslate {
         //     .send()
         //     .unwrap();
 
-        let body = res.text().unwrap();
-        let body: serde_json::Value = serde_json::from_str(&body).unwrap();
+        let body = res.text()?;
+        let body: serde_json::Value = serde_json::from_str(&body)?;
 
         if body["translatedText"].is_null() {
-            String::from("")
+            Ok(String::from(""))
         } else {
-            body["translatedText"].to_string()
+            Ok(body["translatedText"].to_string())
         }
     }
 

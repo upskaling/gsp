@@ -6,7 +6,12 @@ use lingua::Language::{English, French};
 use lingua::LanguageDetectorBuilder;
 
 pub trait TranslateEngine {
-    fn translate(&self, text: &str, lang_from: &str, lang_to: &str) -> String;
+    fn translate(
+        &self,
+        text: &str,
+        lang_from: &str,
+        lang_to: &str,
+    ) -> Result<String, Box<dyn std::error::Error>>;
     fn is_available(&self) -> bool;
 }
 
@@ -17,7 +22,13 @@ impl Translate {
         Translate {}
     }
 
-    pub fn translate(&self, engine: &str, text: &str, lang_from: &str, lang_to: &str) -> String {
+    pub fn translate(
+        &self,
+        engine: &str,
+        text: &str,
+        lang_from: &str,
+        lang_to: &str,
+    ) -> Result<String, Box<dyn std::error::Error>> {
         let mut lang_from = lang_from.to_string();
 
         if lang_from == "auto" {
@@ -30,7 +41,7 @@ impl Translate {
             };
 
             if lang_from == lang_to {
-                return text.to_string();
+                return Ok(text.to_string());
             }
         }
 

@@ -37,7 +37,7 @@ fn main() {
     let text = preprocess_text(&args, text);
 
     let translated_text = if let Some(ref lang_sources) = args.lang_sources {
-        translate_text(&args, lang_sources, text)
+        translate_text(&args, lang_sources, text).unwrap()
     } else {
         text
     };
@@ -90,7 +90,11 @@ fn preprocess_text(args: &Args, text: String) -> String {
     text
 }
 
-fn translate_text(args: &Args, lang_sources: &str, text: String) -> String {
+fn translate_text(
+    args: &Args,
+    lang_sources: &str,
+    text: String,
+) -> Result<String, Box<dyn std::error::Error>> {
     translate::Translate::new().translate(
         args.engine_translation.as_str(),
         text.as_str(),
