@@ -117,15 +117,15 @@ pub fn read_vars(string: &str) -> String {
 }
 
 fn get_list_remove_quotes() -> Vec<[char; 2]> {
-    return ['"', '\'', '`', '[', ']', '{', '}']
+    ['"', '\'', '`', '[', ']', '{', '}']
         .iter()
         .map(|x| [*x, ' '])
-        .collect();
+        .collect()
 }
 
 /// list de caractères spéciaux à remplacer
 fn get_list_replace_char() -> Vec<[char; 2]> {
-    return [
+    [
         ('ᴀ', 'a'),
         ('ʙ', 'b'),
         ('ᴄ', 'c'),
@@ -181,7 +181,7 @@ fn get_list_replace_char() -> Vec<[char; 2]> {
     ]
     .iter()
     .map(|x| [x.0, x.1])
-    .collect();
+    .collect()
 }
 
 fn parse_camel_case(text: &str) -> String {
