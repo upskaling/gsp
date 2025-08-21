@@ -27,7 +27,7 @@ impl TranslateEngine for ArgosTranslate {
             .expect("failed to execute process");
 
         let stderr = String::from_utf8_lossy(&output.stderr);
-        if stderr != "" {
+        if !stderr.is_empty() {
             println!("stderr :: argos-translate ::  {}", stderr);
         }
 
