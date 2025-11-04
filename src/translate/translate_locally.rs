@@ -74,6 +74,9 @@ impl TranslateEngine for TranslateLocally {
         stdin.write_all(&length)?;
         stdin.write_all(&request_bytes)?;
 
+        // Fermer stdin pour indiquer que nous avons fini d'écrire
+        drop(stdin);
+
         let mut response_len = [0u8; 4];
         stdout.read_exact(&mut response_len)?;
         let response_len = u32::from_ne_bytes(response_len);
@@ -83,7 +86,8 @@ impl TranslateEngine for TranslateLocally {
 
         let response = serde_json::from_slice::<TranslateResponse>(&response_bytes)?;
 
-        command.kill()?;
+        // Attendre que le processus se termine proprement au lieu de le tuer
+        let _ = command.wait()?;
 
         if let Some(data) = response.data {
             return Ok(data.target.text);
