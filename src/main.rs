@@ -8,7 +8,7 @@ mod utils;
 use clap::Parser;
 use cli::Args;
 use input::Input;
-use player::paplay::Paplay;
+use player::rodio::Rodio;
 use tts::{espeak::Espeak, pico::Pico, Tts, TtsEgine};
 use utils::{get_pidof, textutils::*};
 
@@ -49,11 +49,11 @@ fn main() {
         "pico" => tts.speak(&mut Pico::new()),
         _ => tts.speak(&mut Pico::new()),
     }
-    .play(Paplay {});
+    .play(Rodio {});
 }
 
 fn stop_tts() {
-    Tts::new().stop(Paplay {});
+    Tts::new().stop(Rodio {});
 }
 
 fn is_another_instance_running() -> bool {

@@ -10,6 +10,7 @@ cli-clipboard = "0.4.0"
 lingua = { version = "1.6.2", default-features = false, features = ["french", "english"] }
 psutil = "3.2.2"
 reqwest = { version = "0.11.22", features = ["blocking", "json"] }
+rodio = "0.21.1"
 serde = "1.0.196"
 serde_derive = "1.0.196"
 serde_json = "1.0.108"
