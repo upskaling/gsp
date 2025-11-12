@@ -9,7 +9,7 @@ use clap::Parser;
 use cli::Args;
 use input::Input;
 use player::rodio::Rodio;
-use tts::{espeak::Espeak, pico::Pico, Tts, TtsEgine};
+use tts::{espeak::Espeak, pico::Pico, Tts};
 use utils::{get_pidof, textutils::*};
 
 fn main() {

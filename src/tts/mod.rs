@@ -4,7 +4,6 @@ pub mod pico;
 use crate::{player::PlayEngine, utils::command_exists};
 
 pub trait TtsEgine {
-    fn new() -> Self;
     fn speak(&self, text: &str);
     fn set_lang(&mut self, lang: String) -> &mut Self;
     fn set_speed(&mut self, speed: i32) -> &mut Self;

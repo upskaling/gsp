@@ -3,9 +3,29 @@ use std::process::Command;
 use super::TtsEgine;
 
 pub struct Espeak {
-    pub lang: String,
-    pub speed: i32,
-    pub path: String,
+    lang: String,
+    speed: i32,
+    pitch: i32,
+    amplitude: i32,
+    output_file: String,
+}
+
+impl Default for Espeak {
+    fn default() -> Self {
+        Self {
+            lang: "fr-FR".to_string(),
+            speed: 1,
+            pitch: 45,
+            amplitude: 100,
+            output_file: "/dev/shm/out.wav".to_string(),
+        }
+    }
+}
+
+impl Espeak {
+    pub fn new() -> Self {
+        Self::default()
+    }
 }
 
 impl TtsEgine for Espeak {
@@ -21,26 +41,18 @@ impl TtsEgine for Espeak {
             .arg(speed.to_string())
             // pitch
             .arg("-p")
-            .arg("45")
+            .arg(self.pitch.to_string())
             // volume
             .arg("-a")
-            .arg("100")
+            .arg(self.amplitude.to_string())
             // path
             .arg("-w")
-            .arg(self.path.as_str())
+            .arg(self.output_file.as_str())
             .arg("--")
             // text
             .arg(text)
             .output()
             .expect("failed to execute process");
-    }
-
-    fn new() -> Self {
-        Espeak {
-            lang: String::from("fr-FR"),
-            speed: 1,
-            path: String::from("/dev/shm/out.wav"),
-        }
     }
 
     fn set_lang(&mut self, lang: String) -> &mut Self {

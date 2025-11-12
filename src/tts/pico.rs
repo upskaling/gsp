@@ -12,7 +12,23 @@ fn pico_effect(text: &str, speed: i32, pitch: i32, volume: i32) -> String {
 pub struct Pico {
     pub lang: String,
     pub speed: i32,
-    pub path: String,
+    pub output_file: String,
+}
+
+impl Default for Pico {
+    fn default() -> Self {
+        Self {
+            lang: "fr-FR".to_string(),
+            speed: 1,
+            output_file: "/dev/shm/out.wav".to_string(),
+        }
+    }
+}
+
+impl Pico {
+    pub fn new() -> Self {
+        Self::default()
+    }
 }
 
 impl TtsEgine for Pico {
@@ -22,20 +38,12 @@ impl TtsEgine for Pico {
 
         Command::new("pico2wave")
             .arg(format!("--lang={}", self.lang))
-            .arg(format!("-w={}", self.path))
+            .arg(format!("-w={}", self.output_file))
             .arg("--")
             .arg(effect)
             .stdout(Stdio::piped())
             .output()
             .expect("failed to execute process");
-    }
-
-    fn new() -> Self {
-        Pico {
-            lang: String::from("fr-FR"),
-            speed: 1,
-            path: String::from("/dev/shm/out.wav"),
-        }
     }
 
     fn set_lang(&mut self, lang: String) -> &mut Self {
