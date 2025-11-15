@@ -1,4 +1,5 @@
 pub mod espeak;
+pub mod espeakng;
 pub mod pico;
 
 use crate::{player::PlayEngine, utils::command_exists};
@@ -59,13 +60,14 @@ impl Tts {
     }
 
     pub fn list_available_engines() -> Vec<&'static str> {
-        let engines = ["pico", "espeak"];
+        let engines = ["pico", "espeak", "espeak-ng"];
 
         engines
             .iter()
             .filter(|&&engine| match engine {
                 "pico" => command_exists("pico2wave"),
                 "espeak" => command_exists("espeak"),
+                "espeak-ng" => command_exists("espeak-ng"),
                 _ => false,
             })
             .cloned()

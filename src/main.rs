@@ -12,6 +12,8 @@ use player::rodio::Rodio;
 use tts::{espeak::Espeak, pico::Pico, Tts};
 use utils::{get_pidof, textutils::*};
 
+use crate::tts::espeakng::EspeakNg;
+
 fn main() {
     let args = Args::parse();
 
@@ -46,6 +48,7 @@ fn main() {
 
     match args.engine_tts.as_str() {
         "espeak" => tts.speak(&mut Espeak::new()),
+        "espeak-ng" => tts.speak(&mut EspeakNg::new()),
         "pico" => tts.speak(&mut Pico::new()),
         _ => tts.speak(&mut Pico::new()),
     }

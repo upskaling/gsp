@@ -35,6 +35,11 @@ apt install libttspico-utils \
             paplay
 ```
 
+```bash
+apt install espeak-ng \
+            libttspico-utils
+```
+
 ### Langages et Outils
 
 - Rust (dernière version stable)
