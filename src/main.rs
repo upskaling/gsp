@@ -1,4 +1,9 @@
+//! Point d'entrée principal de l'application GSP
+//!
+//! GSP est un lecteur d'écran avec reconnaissance automatique de langue.
+
 mod cli;
+mod error;
 mod input;
 mod player;
 mod translate;
@@ -7,39 +12,41 @@ mod utils;
 
 use clap::Parser;
 use cli::Args;
+use error::{GspError, GspResult};
 use input::Input;
 use player::rodio::Rodio;
-use tts::{espeak::Espeak, pico::Pico, Tts};
+use tts::{Tts, espeak::Espeak, pico::Pico};
 use utils::{get_pidof, textutils::*};
 
 use crate::tts::espeakng::EspeakNg;
 
 fn main() {
+    if let Err(e) = run() {
+        eprintln!("Erreur: {}", e);
+        std::process::exit(1);
+    }
+}
+
+/// Fonction principale exécutant la logique de l'application
+fn run() -> GspResult<()> {
     let args = Args::parse();
 
     if args.stop {
         stop_tts();
-        return;
+        return Ok(());
     }
 
     if is_another_instance_running() {
         println!("Une autre instance du programme est en cours");
         stop_tts();
-        return;
+        return Ok(());
     }
 
-    let text = match get_input_text(&args) {
-        Ok(text) => text,
-        Err(e) => {
-            eprintln!("Erreur lors de la récupération du texte : {}", e);
-            return;
-        }
-    };
-
+    let text = get_input_text(&args)?;
     let text = preprocess_text(&args, text);
 
     let translated_text = if let Some(ref lang_sources) = args.lang_sources {
-        translate_text(&args, lang_sources, text).unwrap()
+        translate_text(&args, lang_sources, text)?
     } else {
         text
     };
@@ -53,6 +60,8 @@ fn main() {
         _ => tts.speak(&mut Pico::new()),
     }
     .play(Rodio {});
+
+    Ok(())
 }
 
 fn stop_tts() {
@@ -63,22 +72,24 @@ fn is_another_instance_running() -> bool {
     get_pidof("gsp").len() > 1
 }
 
-fn get_input_text(args: &Args) -> Result<String, String> {
+/// Récupère le texte d'entrée selon la source spécifiée
+fn get_input_text(args: &Args) -> GspResult<String> {
     let text = Input::new(
         args.source.clone(),
         args.lang_sources
             .clone()
-            .unwrap_or(args.lang_targets.clone()),
+            .unwrap_or_else(|| args.lang_targets.clone()),
     )
     .input();
 
     if text.is_empty() {
-        return Err("Aucun texte à lire".to_string());
+        return Err(GspError::TextRetrieval("Aucun texte à lire".to_string()));
     }
 
     Ok(text)
 }
 
+/// Prétraite le texte (nettoyage, formatage)
 fn preprocess_text(args: &Args, text: String) -> String {
     let mut text = if args.dev {
         read_vars(&text).to_lowercase()
@@ -93,19 +104,19 @@ fn preprocess_text(args: &Args, text: String) -> String {
     text
 }
 
-fn translate_text(
-    args: &Args,
-    lang_sources: &str,
-    text: String,
-) -> Result<String, Box<dyn std::error::Error>> {
-    translate::Translate::new().translate(
-        args.engine_translation.as_str(),
-        text.as_str(),
-        lang_sources,
-        args.lang_targets.as_str(),
-    )
+/// Traduit le texte selon les paramètres
+fn translate_text(args: &Args, lang_sources: &str, text: String) -> GspResult<String> {
+    translate::Translate::new()
+        .translate(
+            args.engine_translation.as_str(),
+            text.as_str(),
+            lang_sources,
+            args.lang_targets.as_str(),
+        )
+        .map_err(|e| GspError::Translation(e.to_string()))
 }
 
+/// Configure le moteur TTS avec les paramètres
 fn configure_tts(args: &Args, text: String) -> Tts {
     let speed = args.speed.parse::<f32>().unwrap_or(1.0) * 100.0;
     let speed = speed as i32;

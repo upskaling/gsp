@@ -1,11 +1,24 @@
+//! Module de capture d'écran avec gnome-screenshot
+//!
+//! Interface pour l'outil de capture gnome-screenshot.
+
 use std::process::{Command, Stdio};
 
-// gnome-screenshot --area --file=/tmp/screenshot.png
+/// Capture une zone de l'écran avec gnome-screenshot
+///
+/// # Arguments
+/// * `screenshooter` - Chemin où sauvegarder la capture
 pub fn gnome_screenshot_area(screenshooter: &str) {
-    Command::new("gnome-screenshot")
+    let result = Command::new("gnome-screenshot")
         .arg("--area")
         .arg(format!("--file={}", screenshooter))
         .stdout(Stdio::piped())
-        .output()
-        .expect("failed to execute process");
+        .output();
+
+    if let Err(e) = result {
+        eprintln!(
+            "Erreur lors de la capture d'écran (gnome-screenshot): {}",
+            e
+        );
+    }
 }

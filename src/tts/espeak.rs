@@ -1,7 +1,13 @@
+//! Moteur de synthèse vocale eSpeak
+//!
+//! Implémentation du trait TtsEngine pour eSpeak.
+
 use std::process::Command;
 
-use super::TtsEgine;
+use super::TtsEngine;
 
+/// Configuration du moteur eSpeak
+#[derive(Debug, Clone)]
 pub struct Espeak {
     lang: String,
     speed: i32,
@@ -23,16 +29,17 @@ impl Default for Espeak {
 }
 
 impl Espeak {
+    /// Crée une nouvelle configuration eSpeak avec des valeurs par défaut
     pub fn new() -> Self {
         Self::default()
     }
 }
 
-impl TtsEgine for Espeak {
+impl TtsEngine for Espeak {
     fn speak(&self, text: &str) {
         let speed = (self.speed / 100 * 320) / 2;
 
-        Command::new("espeak")
+        let result = Command::new("espeak")
             // voice name
             .arg("-v")
             .arg(format!("mb-{}{}", self.lang[..2].to_uppercase(), "4"))
@@ -51,8 +58,11 @@ impl TtsEgine for Espeak {
             .arg("--")
             // text
             .arg(text)
-            .output()
-            .expect("failed to execute process");
+            .output();
+
+        if let Err(e) = result {
+            eprintln!("Erreur lors de l'exécution d'eSpeak: {}", e);
+        }
     }
 
     fn set_lang(&mut self, lang: String) -> &mut Self {
