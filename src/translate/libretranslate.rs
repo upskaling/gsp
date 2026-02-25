@@ -1,8 +1,12 @@
+//! Module de traduction avec LibreTranslate
+//!
+//! Interface pour le service de traduction LibreTranslate.
+
 use std::collections::HashMap;
 
 use super::TranslateEngine;
-// use serde_json::json;
 
+/// Service de traduction LibreTranslate
 pub struct Libretranslate {}
 
 impl TranslateEngine for Libretranslate {
@@ -14,7 +18,6 @@ impl TranslateEngine for Libretranslate {
     ) -> Result<String, Box<dyn std::error::Error>> {
         let url = "https://libretranslate.com/translate";
 
-        // request user agent
         let client = reqwest::blocking::Client::new();
 
         let lang_from = lang_from[..2].to_string();
@@ -44,28 +47,13 @@ impl TranslateEngine for Libretranslate {
                 "Mozilla/5.0 (Windows NT 10.0; rv:105.0) Gecko/20100101 Firefox/105.0",
             )
             .form(&params)
-            .send()
-            .expect("Failed to send request");
-
-        // let res = client
-        //     .post(url)
-        //     .json(&json!({
-        //         "q": text,
-        //         "source": lang_from,
-        //         "target": lang_to,
-        //     }))
-        //     .header(
-        //         "User-Agent",
-        //         "Mozilla/5.0 (Windows NT 10.0; rv:105.0) Gecko/20100101 Firefox/105.0",
-        //     )
-        //     .send()
-        //     .unwrap();
+            .send()?;
 
         let body = res.text()?;
         let body: serde_json::Value = serde_json::from_str(&body)?;
 
         if body["translatedText"].is_null() {
-            Ok(String::from(""))
+            Ok(String::new())
         } else {
             Ok(body["translatedText"].to_string())
         }

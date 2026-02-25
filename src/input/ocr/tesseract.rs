@@ -1,6 +1,17 @@
+//! Module de reconnaissance OCR avec Tesseract
+//!
+//! Interface pour l'outil de reconnaissance Tesseract.
+
 use std::process::{Command, Stdio};
 
-// tesseract /tmp/screenshot.png -l fra stdout
+/// Exécute Tesseract OCR sur une image
+///
+/// # Arguments
+/// * `screenshooter` - Chemin vers le fichier image
+/// * `lang` - Code de langue (ex: "fr-FR", "en-US")
+///
+/// # Retour
+/// Le texte reconnu, ou une chaîne vide en cas d'erreur
 pub fn tesseract(screenshooter: &str, lang: &str) -> String {
     let lang = match lang {
         "de-DE" => "deu",
@@ -11,16 +22,18 @@ pub fn tesseract(screenshooter: &str, lang: &str) -> String {
         _ => "eng",
     };
 
-    let command = Command::new("tesseract")
+    match Command::new("tesseract")
         .arg(screenshooter)
         .arg("stdout")
         .arg("-l")
         .arg(lang)
         .stderr(Stdio::null())
         .output()
-        .expect("failed to execute process");
-
-    let stdout = String::from_utf8_lossy(&command.stdout);
-
-    stdout.to_string()
+    {
+        Ok(output) => String::from_utf8_lossy(&output.stdout).to_string(),
+        Err(e) => {
+            eprintln!("Erreur lors de l'exécution de Tesseract: {}", e);
+            String::new()
+        }
+    }
 }

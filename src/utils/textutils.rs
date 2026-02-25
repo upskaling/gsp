@@ -1,9 +1,14 @@
-/// Parsé les hashtag
-/// # Examples
+//! Utilitaires de traitement de texte pour GSP
+//!
+//! Fournit des fonctions pour le nettoyage et le formatage du texte.
+
+/// Parse les hashtags en séparant les mots CamelCase
+///
+/// # Exemples
 /// ```
 /// let text = String::from("#helloWorld");
-/// let result = parse_hashtag(text);
-/// assert_eq!(result, " #hello World");
+/// let result = parse_hashtag(&text);
+/// assert_eq!(result, "#hello World");
 /// ```
 pub fn parse_hashtag(string: &str) -> String {
     let mut result = String::new();
@@ -27,12 +32,12 @@ pub fn parse_hashtag(string: &str) -> String {
     trim_whitespace(&result)
 }
 
-/// remove multiple spaces in a string
+/// Supprime les espaces multiples dans une chaîne
 /// https://stackoverflow.com/a/71864249
-/// # Examples
+/// # Exemples
 /// ```
 /// let text = String::from("  a  b  c  ");
-/// let result = trim_whitespace(text);
+/// let result = trim_whitespace(&text);
 /// assert_eq!(result, "a b c");
 /// ```
 pub fn trim_whitespace(string: &str) -> String {
@@ -48,40 +53,44 @@ pub fn trim_whitespace(string: &str) -> String {
     result
 }
 
-/// remove special characters
-/// # Examples
+/// Supprime les caractères spéciaux et normalise le texte
+///
+/// # Exemples
 /// ```
 /// let text = String::from("𝐠𝐫𝐚𝐬 et 𝘪𝘵𝘢𝘭𝘪𝘤");
-/// let result = remove_special_characters(text);
+/// let result = remove_special_characters(&text);
 /// assert_eq!(result, "gras et italic");
 /// ```
 pub fn remove_special_characters(string: &str) -> String {
     let mut list_of_special_characters = Vec::new();
 
     list_of_special_characters.append(&mut get_list_remove_quotes());
-
     list_of_special_characters.append(&mut get_list_replace_char());
 
-    // Alphabet
+    // Alphabet - caractères spéciaux vers alphabet normal
     for j in [
         '𝐀', '𝐚', '𝑨', '𝒂', '𝒜', '𝒶', '𝔸', '𝕒', '𝕬', '𝖆', '𝖠', '𝖺', '𝗔', '𝗮', '𝘈', '𝘢', '𝘼', '𝙖',
         '𝙰', '𝚊', '𝐴', '𝑎', '𝔄', '𝔞', '𝓐', '𝓪',
     ] {
         for i in 0..26 {
-            list_of_special_characters.push([
-                std::char::from_u32(j as u32 + i).unwrap(),
-                std::char::from_u32('a' as u32 + i).unwrap(),
-            ]);
+            if let (Some(from), Some(to)) = (
+                std::char::from_u32(j as u32 + i),
+                std::char::from_u32('a' as u32 + i),
+            ) {
+                list_of_special_characters.push([from, to]);
+            }
         }
     }
 
-    // Chiffres
+    // Chiffres - caractères spéciaux vers chiffres normaux
     for j in ['𝟎', '𝟘', '𝟢', '𝟬', '𝟶', '𝟬', '𝟢'] {
         for i in 0..10 {
-            list_of_special_characters.push([
-                std::char::from_u32(j as u32 + i).unwrap(),
-                std::char::from_u32('0' as u32 + i).unwrap(),
-            ]);
+            if let (Some(from), Some(to)) = (
+                std::char::from_u32(j as u32 + i),
+                std::char::from_u32('0' as u32 + i),
+            ) {
+                list_of_special_characters.push([from, to]);
+            }
         }
     }
 
@@ -90,32 +99,32 @@ pub fn remove_special_characters(string: &str) -> String {
         text = text.replace(i[0], &i[1].to_string());
     }
 
-    text.to_string()
+    text
 }
 
-/// Read variables
-/// # Examples
+/// Lit et formatte les variables (snake_case, kebab-case, CamelCase)
+///
+/// # Exemples
 /// ```
 /// let text = String::from("HelloWorld");
-/// let result = read_vars(text);
+/// let result = read_vars(&text);
 /// assert_eq!(result, " Hello World");
 /// ```
 pub fn read_vars(string: &str) -> String {
     let mut text = string.to_string();
 
-    // on récupère les _,- par des espaces
-    // Snake_case et kebab-case
+    // Remplace les _,- par des espaces (Snake_case et kebab-case)
     for i in ['_', '-'] {
         text = text.replace(i, " ");
     }
 
-    // on converti le texte example: "HelloWorld" en "Hello World"
-    // CamelCase
+    // Convertit le CamelCase en texte normal
     text = parse_camel_case(&text);
 
     text
 }
 
+/// Liste des caractères de quotes à remplacer par des espaces
 fn get_list_remove_quotes() -> Vec<[char; 2]> {
     ['"', '\'', '`', '[', ']', '{', '}']
         .iter()
@@ -123,7 +132,7 @@ fn get_list_remove_quotes() -> Vec<[char; 2]> {
         .collect()
 }
 
-/// list de caractères spéciaux à remplacer
+/// Liste de caractères spéciaux à remplacer
 fn get_list_replace_char() -> Vec<[char; 2]> {
     [
         ('ᴀ', 'a'),
@@ -184,6 +193,7 @@ fn get_list_replace_char() -> Vec<[char; 2]> {
     .collect()
 }
 
+/// Parse le CamelCase en séparant les mots
 fn parse_camel_case(text: &str) -> String {
     let mut result = String::new();
 
@@ -204,6 +214,7 @@ fn parse_camel_case(text: &str) -> String {
     result
 }
 
+/// Remplace les termes selon le dictionnaire
 pub fn replace(text: &str) -> String {
     // Si le répertoire existe
     if std::path::Path::new("dict/fr_FR").exists() {
@@ -212,27 +223,37 @@ pub fn replace(text: &str) -> String {
         for (replace, by) in get_list_replace() {
             text = text.replace(&replace, &by);
         }
+
+        return text;
     }
 
     text.to_string()
 }
 
+/// Charge la liste des remplacements depuis le dictionnaire
 fn get_list_replace() -> Vec<(String, String)> {
     let mut result = Vec::new();
 
-    let path = list_files("dict/fr_FR");
+    let path = match list_files("dict/fr_FR") {
+        Ok(files) => files,
+        Err(e) => {
+            eprintln!("Avertissement: impossible de lire le dictionnaire: {}", e);
+            return result;
+        }
+    };
 
     for file in path {
-        if std::fs::metadata(&file).unwrap().is_file() {
-            let file = std::fs::read_to_string(file).unwrap();
-            let file = file.split('\n').collect::<Vec<&str>>();
-            for line in file {
-                let line = line.split('=').collect::<Vec<&str>>();
+        if let Ok(metadata) = std::fs::metadata(&file)
+            && metadata.is_file()
+            && let Ok(content) = std::fs::read_to_string(&file)
+        {
+            for line in content.split('\n') {
+                let parts: Vec<&str> = line.split('=').collect();
 
-                if line.len() != 2 {
+                if parts.len() != 2 {
                     continue;
                 }
-                result.push((line[0].to_string(), line[1].to_string()));
+                result.push((parts[0].to_string(), parts[1].to_string()));
             }
         }
     }
@@ -240,66 +261,72 @@ fn get_list_replace() -> Vec<(String, String)> {
     result
 }
 
-// Lister tous les fichiers d'un répertoire
-fn list_files(path: &str) -> Vec<String> {
+/// Liste tous les fichiers d'un répertoire
+fn list_files(path: &str) -> Result<Vec<String>, std::io::Error> {
     let mut result = Vec::new();
 
-    let paths = std::fs::read_dir(path).unwrap();
+    let paths = std::fs::read_dir(path)?;
 
     for path in paths {
-        let path = path.unwrap().path();
-        let path = path.to_str().unwrap();
-        result.push(path.to_string());
+        let path = path?.path();
+        if let Some(path_str) = path.to_str() {
+            result.push(path_str.to_string());
+        }
     }
 
-    result
+    Ok(result)
 }
 
-#[test]
-fn test_parse_hashtag() {
-    let mut text = String::from("#helloWorld");
-    text = parse_hashtag(&text);
-    assert_eq!(text.as_str(), "#hello World");
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn test_parse_hashtag2() {
-    let mut text = String::from("le #chat est #mignon");
-    text = parse_hashtag(&text);
-    assert_eq!(text.as_str(), "le #chat est #mignon");
-}
+    #[test]
+    fn test_parse_hashtag() {
+        let text = String::from("#helloWorld");
+        let result = parse_hashtag(&text);
+        assert_eq!(result.as_str(), "#hello World");
+    }
 
-#[test]
-fn test_trim_whitespace() {
-    let mut text = String::from("  a  b  c  ");
-    text = trim_whitespace(&text);
-    assert_eq!(text.as_str(), "a b c");
-}
+    #[test]
+    fn test_parse_hashtag2() {
+        let text = String::from("le #chat est #mignon");
+        let result = parse_hashtag(&text);
+        assert_eq!(result.as_str(), "le #chat est #mignon");
+    }
 
-#[test]
-fn test_remove_special_characters() {
-    let mut text = String::from("𝐠𝐫𝐚𝐬 et 𝘪𝘵𝘢𝘭𝘪𝘤");
-    text = remove_special_characters(&text);
-    assert_eq!(text.as_str(), "gras et italic");
-}
+    #[test]
+    fn test_trim_whitespace() {
+        let text = String::from("  a  b  c  ");
+        let result = trim_whitespace(&text);
+        assert_eq!(result.as_str(), "a b c");
+    }
 
-#[test]
-fn test_replace_special_chars() {
-    let text = String::from("С і І ѕ");
-    let text = remove_special_characters(&text);
+    #[test]
+    fn test_remove_special_characters() {
+        let text = String::from("𝐠𝐫𝐚𝐬 et 𝘪𝘵𝘢𝘭𝘪𝘤");
+        let result = remove_special_characters(&text);
+        assert_eq!(result.as_str(), "gras et italic");
+    }
 
-    assert_eq!(text, "C i I s");
-}
+    #[test]
+    fn test_replace_special_chars() {
+        let text = String::from("С і І ѕ");
+        let result = remove_special_characters(&text);
+        assert_eq!(result, "C i I s");
+    }
 
-#[test]
-fn test_read_vars() {
-    let mut text = String::from("HelloWorld");
-    text = read_vars(&text);
-    assert_eq!(text.as_str(), " Hello World");
-}
+    #[test]
+    fn test_read_vars() {
+        let text = String::from("HelloWorld");
+        let result = read_vars(&text);
+        assert_eq!(result.as_str(), " Hello World");
+    }
 
-#[test]
-fn test_replace() {
-    let text = replace("HelloWorld");
-    assert_eq!(text, "HelloWorld");
+    #[test]
+    fn test_replace_no_dict() {
+        // Test when dict directory doesn't exist
+        let text = replace("HelloWorld");
+        assert_eq!(text, "HelloWorld");
+    }
 }
