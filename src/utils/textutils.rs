@@ -102,6 +102,23 @@ pub fn remove_special_characters(string: &str) -> String {
     text
 }
 
+/// supprimer les caractères markdown
+///
+/// # Examples
+/// ```
+/// let text = String::from("**Hello World**");
+/// let result = read_vars(text);
+/// assert_eq!(result, " Hello World");
+/// ```
+pub fn remove_markdown(string: &str) -> String {
+    let mut text = string.to_string();
+
+    text = text.replace("**", ""); // bold
+    text = text.replace("*", ""); // italic
+
+    text
+}
+
 /// Lit et formatte les variables (snake_case, kebab-case, CamelCase)
 ///
 /// # Exemples
@@ -120,6 +137,9 @@ pub fn read_vars(string: &str) -> String {
 
     // Convertit le CamelCase en texte normal
     text = parse_camel_case(&text);
+
+    // Supprimer les caractères markdown
+    text = remove_markdown(&text);
 
     text
 }
