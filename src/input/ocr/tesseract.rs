@@ -19,7 +19,7 @@ pub fn tesseract(screenshooter: &str, lang: &str) -> String {
         "es-ES" => "spa",
         "fr-FR" => "fra",
         "it-IT" => "ita",
-        _ => "eng",
+        _ => "eng+fra",
     };
 
     match Command::new("tesseract")

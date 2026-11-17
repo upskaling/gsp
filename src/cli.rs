@@ -14,6 +14,7 @@ pub struct Args {
         short = 's',
         long,
         help = "Source of text to read",
+        default_value = "stdin",
         value_parser = ["selection", "clipboard", "file", "ocr", "stdin"]
     )]
     pub source: String,
