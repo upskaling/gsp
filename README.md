@@ -1,3 +1,13 @@
+# ⚠️ PROJET ARCHIVÉ — ARCHIVED PROJECT
+
+> **Ce dépôt est archivé et en lecture seule. Il n'est plus maintenu.**
+> Le développement se poursuit sur le nouveau projet : **https://github.com/upskaling/gsp-ui**
+>
+> **This repository is archived and read-only. It is no longer maintained.**
+> Development continues on the new project: **https://github.com/upskaling/gsp-ui**
+
+---
+
 # GSP : Lecteur d'écran avec reconnaissance automatique de langue
 
 ## Description
@@ -159,4 +169,4 @@ cp ./gsp ~/.local/bin/
 
 ## Contribution
 
-Les contributions sont les bienvenues ! Veuillez ouvrir une issue ou soumettre une pull request.
+Ce projet est archivé : les issues et pull requests ne sont plus acceptées. Veuillez contribuer sur https://github.com/upskaling/gsp-ui.
